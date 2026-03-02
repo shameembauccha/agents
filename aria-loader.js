@@ -35,7 +35,7 @@
 
     #aria-widget {
       position: fixed;
-      bottom: 24px;
+      bottom: 90px;
       right: 24px;
       z-index: 999999;
       font-family: 'DM Sans', sans-serif;
@@ -441,14 +441,20 @@ YOUR PERSONA AND BEHAVIOUR:
     history.push({ role: 'user', parts: [{ text }] });
 
     try {
+      // Build contents: system prompt as first user/model exchange, then real history
+      const contents = [
+        { role: 'user',  parts: [{ text: 'You are Aria. Here are your instructions:\n\n' + SYSTEM_PROMPT }] },
+        { role: 'model', parts: [{ text: 'Understood. I am Aria, ready to help.' }] },
+        ...history
+      ];
+
       const res  = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-            contents: history,
+            contents,
             generationConfig: { temperature: 0.7, maxOutputTokens: 600, topP: 0.9 }
           })
         }
@@ -480,9 +486,14 @@ YOUR PERSONA AND BEHAVIOUR:
     av.className = 'aria-msg-av aria-av-aria';
     av.textContent = 'A';
 
+    // Wrapper holds bubble + quick replies stacked
+    const right = document.createElement('div');
+    right.style.cssText = 'display:flex;flex-direction:column;gap:8px;max-width:85%;';
+
     const bubble = document.createElement('div');
     bubble.className = 'aria-bubble-msg';
     bubble.innerHTML = fmt(text);
+    right.appendChild(bubble);
 
     if (qr?.length) {
       const qrWrap = document.createElement('div');
@@ -494,11 +505,11 @@ YOUR PERSONA AND BEHAVIOUR:
         btn.onclick = () => { qrWrap.remove(); send(q); };
         qrWrap.appendChild(btn);
       });
-      bubble.appendChild(qrWrap);
+      right.appendChild(qrWrap);
     }
 
     msg.appendChild(av);
-    msg.appendChild(bubble);
+    msg.appendChild(right);
     msgs.appendChild(msg);
     scrollDown();
   }
