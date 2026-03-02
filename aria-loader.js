@@ -10,11 +10,10 @@
   'use strict';
 
   // ── CONFIG ──────────────────────────────────────────────────
-  const GEMINI_KEY        = 'AIzaSyA7lLj3X8ni_Ov7jD004IyY3d__Cl01qWI';
+  const PROXY_URL       = 'https://simplitconsulting.com/wp-json/simplit/v1/aria';
   const EMAILJS_SERVICE   = 'service_rs59uuo';
   const EMAILJS_TEMPLATE  = 'template_el8vjzi';
   const EMAILJS_KEY       = 'htvC-XwdHLSAXmhnv';
-  const BASE_URL          = 'https://shameembauccha.github.io/agents';
 
   // ── PREVENT DOUBLE LOAD ─────────────────────────────────────
   if (document.getElementById('aria-widget')) return;
@@ -448,15 +447,10 @@ YOUR PERSONA AND BEHAVIOUR:
         ...history
       ];
 
-      const res  = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
-        {
+      const res  = await fetch(PROXY_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents,
-            generationConfig: { temperature: 0.7, maxOutputTokens: 600, topP: 0.9 }
-          })
+          body: JSON.stringify({ contents })
         }
       );
       const data  = await res.json();
