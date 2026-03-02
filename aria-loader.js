@@ -1,19 +1,27 @@
 /**
  * Aria Widget Loader — Simpl'IT Consulting
- * Paste this into WordPress via Appearance → Theme Editor → footer.php
- * or via a plugin like "Insert Headers and Footers"
+ *
+ * Paste into WordPress via:
+ *   Appearance → Theme Editor → footer.php
+ *   OR a plugin like "Insert Headers and Footers"
  *
  * <script src="https://shameembauccha.github.io/agents/aria-loader.js" defer></script>
+ *
+ * SECURITY NOTE:
+ *   No API keys are stored here. All AI calls are routed through
+ *   the WordPress proxy endpoint defined in PROXY_URL below.
+ *   The Gemini key lives only in wp-config.php on the server.
  */
 
 (function () {
   'use strict';
 
   // ── CONFIG ──────────────────────────────────────────────────
-  const PROXY_URL       = 'https://simplitconsulting.com/wp-json/simplit/v1/aria';
-  const EMAILJS_SERVICE   = 'service_rs59uuo';
-  const EMAILJS_TEMPLATE  = 'template_el8vjzi';
-  const EMAILJS_KEY       = 'htvC-XwdHLSAXmhnv';
+  // All AI requests go through your WordPress proxy — never direct to Gemini.
+  const PROXY_URL          = 'https://simplitconsulting.com/wp-json/simplit/v1/aria';
+  const EMAILJS_SERVICE    = 'service_rs59uuo';
+  const EMAILJS_TEMPLATE   = 'template_el8vjzi';
+  const EMAILJS_KEY        = 'htvC-XwdHLSAXmhnv';
 
   // ── PREVENT DOUBLE LOAD ─────────────────────────────────────
   if (document.getElementById('aria-widget')) return;
@@ -178,7 +186,7 @@
     .aria-msg.aria-user .aria-bubble-msg {
       background: #1a3a5c; color: white; border-bottom-right-radius: 4px;
     }
-    .aria-bubble-msg p { margin-bottom: 6px; }
+    .aria-bubble-msg p { margin: 0 0 6px; }
     .aria-bubble-msg p:last-child { margin-bottom: 0; }
     .aria-bubble-msg strong { color: #1a3a5c; font-weight: 600; }
     .aria-msg.aria-user .aria-bubble-msg strong { color: #e8b85a; }
@@ -319,12 +327,12 @@
   document.head.appendChild(ejsScript);
 
   // ── STATE ───────────────────────────────────────────────────
-  let isOpen         = false;
-  let isTyping       = false;
-  let messageCount   = 0;
-  let nudgeShown     = false;
-  let leadCaptured   = false;
-  let history        = [];
+  let isOpen        = false;
+  let isTyping      = false;
+  let messageCount  = 0;
+  let nudgeShown    = false;
+  let leadCaptured  = false;
+  let history       = [];
 
   const SYSTEM_PROMPT = `You are Aria, Simpl'IT Consulting's Oracle specialist assistant, embedded on the Simpl'IT Consulting website.
 
@@ -439,23 +447,23 @@ YOUR PERSONA AND BEHAVIOUR:
     setTyping(true);
     history.push({ role: 'user', parts: [{ text }] });
 
-    try {
-      // Build contents: system prompt as first user/model exchange, then real history
-      const contents = [
-        { role: 'user',  parts: [{ text: 'You are Aria. Here are your instructions:\n\n' + SYSTEM_PROMPT }] },
-        { role: 'model', parts: [{ text: 'Understood. I am Aria, ready to help.' }] },
-        ...history
-      ];
+    // Build contents: system prompt as first user/model exchange, then real history
+    const contents = [
+      { role: 'user',  parts: [{ text: 'You are Aria. Here are your instructions:\n\n' + SYSTEM_PROMPT }] },
+      { role: 'model', parts: [{ text: 'Understood. I am Aria, ready to help.' }] },
+      ...history
+    ];
 
+    try {
       const res  = await fetch(PROXY_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents })
-        }
-      );
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ contents })
+      });
       const data  = await res.json();
       const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text
         || "I'm having a moment — please try again or reach out at contact@simplitconsulting.com.";
+
       addBot(reply);
       history.push({ role: 'model', parts: [{ text: reply }] });
 
@@ -464,6 +472,7 @@ YOUR PERSONA AND BEHAVIOUR:
         setTimeout(showNudge, 800);
       }
     } catch (e) {
+      console.error('Aria error:', e);
       addBot("I'm having a moment — please try again or reach out to us at contact@simplitconsulting.com.");
     }
 
@@ -480,7 +489,6 @@ YOUR PERSONA AND BEHAVIOUR:
     av.className = 'aria-msg-av aria-av-aria';
     av.textContent = 'A';
 
-    // Wrapper holds bubble + quick replies stacked
     const right = document.createElement('div');
     right.style.cssText = 'display:flex;flex-direction:column;gap:8px;max-width:85%;';
 
@@ -598,11 +606,11 @@ YOUR PERSONA AND BEHAVIOUR:
       .join('\n\n');
 
     const leadData = {
-      id: 'ARIA_' + Date.now(),
+      id:        'ARIA_' + Date.now(),
       timestamp: new Date().toISOString(),
-      source: 'Aria Chat Widget',
-      contact: { name, email, company, notes: 'Lead from Aria chat widget' },
-      profile: { persona: 'unknown', industry: 'unknown', situation: 'chat_inquiry', painPoints: [], domains: [], currentSystem: 'unknown', companySize: 'unknown' }
+      source:    'Aria Chat Widget',
+      contact:   { name, email, company, notes: 'Lead from Aria chat widget' },
+      profile:   { persona: 'unknown', industry: 'unknown', situation: 'chat_inquiry', painPoints: [], domains: [], currentSystem: 'unknown', companySize: 'unknown' }
     };
 
     try {
@@ -642,9 +650,9 @@ YOUR PERSONA AND BEHAVIOUR:
   function fmt(text) {
     return '<p>' + text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/\*(.*?)\*/g,   '<em>$1</em>')
       .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g, '<br>') + '</p>';
+      .replace(/\n/g,   '<br>') + '</p>';
   }
 
   function scrollDown() {
