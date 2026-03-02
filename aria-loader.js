@@ -10,7 +10,7 @@
   'use strict';
 
   // ── CONFIG ──────────────────────────────────────────────────
-  const GEMINI_KEY        = 'AIzaSyAljXf0hJlYlRDJjJVCX2Uf5sIEYhfK8Jw';
+  const GEMINI_KEY        = 'AIzaSyA7lLj3X8ni_Ov7jD004IyY3d__Cl01qWI';
   const EMAILJS_SERVICE   = 'service_rs59uuo';
   const EMAILJS_TEMPLATE  = 'template_el8vjzi';
   const EMAILJS_KEY       = 'htvC-XwdHLSAXmhnv';
