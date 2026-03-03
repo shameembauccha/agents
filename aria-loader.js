@@ -1,27 +1,19 @@
 /**
  * Aria Widget Loader — Simpl'IT Consulting
- *
- * Paste into WordPress via:
- *   Appearance → Theme Editor → footer.php
- *   OR a plugin like "Insert Headers and Footers"
+ * Paste this into WordPress via Appearance → Theme Editor → footer.php
+ * or via a plugin like "Insert Headers and Footers"
  *
  * <script src="https://shameembauccha.github.io/agents/aria-loader.js" defer></script>
- *
- * SECURITY NOTE:
- *   No API keys are stored here. All AI calls are routed through
- *   the WordPress proxy endpoint defined in PROXY_URL below.
- *   The Gemini key lives only in wp-config.php on the server.
  */
 
 (function () {
   'use strict';
 
   // ── CONFIG ──────────────────────────────────────────────────
-  // All AI requests go through your WordPress proxy — never direct to Gemini.
-  const PROXY_URL          = 'https://simplitconsulting.com/wp-json/simplit/v1/aria';
-  const EMAILJS_SERVICE    = 'service_rs59uuo';
-  const EMAILJS_TEMPLATE   = 'template_el8vjzi';
-  const EMAILJS_KEY        = 'htvC-XwdHLSAXmhnv';
+  const PROXY_URL       = 'https://simplitconsulting.com/wp-json/simplit/v1/aria';
+  const EMAILJS_SERVICE   = 'service_rs59uuo';
+  const EMAILJS_TEMPLATE  = 'template_el8vjzi';
+  const EMAILJS_KEY       = 'htvC-XwdHLSAXmhnv';
 
   // ── PREVENT DOUBLE LOAD ─────────────────────────────────────
   if (document.getElementById('aria-widget')) return;
@@ -186,12 +178,14 @@
     .aria-msg.aria-user .aria-bubble-msg {
       background: #1a3a5c; color: white; border-bottom-right-radius: 4px;
     }
-    .aria-bubble-msg p { margin: 0 0 6px; }
+    .aria-bubble-msg p { margin-bottom: 6px; }
     .aria-bubble-msg p:last-child { margin-bottom: 0; }
     .aria-bubble-msg strong { color: #1a3a5c; font-weight: 600; }
     .aria-msg.aria-user .aria-bubble-msg strong { color: #e8b85a; }
     .aria-bubble-msg ul { padding-left: 16px; margin: 6px 0; }
     .aria-bubble-msg li { margin-bottom: 3px; }
+    .aria-bubble-msg a { color: #c8973a; text-decoration: underline; text-underline-offset: 2px; }
+    .aria-bubble-msg a:hover { color: #1a3a5c; }
 
     .aria-typing {
       display: flex; gap: 4px; align-items: center; padding: 12px 14px;
@@ -327,14 +321,37 @@
   document.head.appendChild(ejsScript);
 
   // ── STATE ───────────────────────────────────────────────────
-  let isOpen        = false;
-  let isTyping      = false;
-  let messageCount  = 0;
-  let nudgeShown    = false;
-  let leadCaptured  = false;
-  let history       = [];
+  let isOpen         = false;
+  let isTyping       = false;
+  let messageCount   = 0;
+  let nudgeShown     = false;
+  let leadCaptured   = false;
+  let history        = [];
 
   const SYSTEM_PROMPT = `You are Aria, Simpl'IT Consulting's Oracle specialist assistant, embedded on the Simpl'IT Consulting website.
+
+CONTENT PRIORITY — ALWAYS follow this order:
+1. Answer first from Simpl'IT's own services, expertise, and context in this prompt
+2. Reference and link to relevant pages on the Simpl'IT website naturally
+3. Only broaden to general Oracle industry knowledge if the question genuinely goes beyond Simpl'IT's scope
+4. Never recommend or mention competitors
+
+SITE PAGES — link to these naturally and proactively when relevant:
+- Services overview: https://simplitconsulting.com/services
+- About Simpl'IT: https://simplitconsulting.com/about
+- Client references (filterable by vertical, country, domain, project type): https://simplitconsulting.com/references
+- Start your journey: https://simplitconsulting.com/journey
+- Contact the team: https://simplitconsulting.com/contact
+
+JOURNEY PAGE — primary conversion path:
+- After 2-3 substantive exchanges, naturally guide the visitor toward https://simplitconsulting.com/journey
+- Frame it as the logical next step: "The best way to explore how we can help is through our guided journey — it takes just a few minutes and helps us understand your situation."
+- Never push it aggressively — earn the suggestion through a helpful conversation first
+
+REFERENCES PAGE:
+- When a visitor mentions their industry, country, region, or Oracle module, proactively mention Simpl'IT's relevant experience and link to https://simplitconsulting.com/references
+- Example: "We've worked with organisations in similar situations — you can explore our references filtered by your industry or region at simplitconsulting.com/references"
+- References can be filtered by: Industry/Vertical, Country, Oracle Domain (Finance, HCM, SCM, Projects etc.), Project Type (Implementation, Migration, Health Check, Optimisation etc.)
 
 ABOUT SIMPL'IT CONSULTING:
 - Specialist Oracle consulting firm headquartered in Port Louis, Mauritius
@@ -410,10 +427,10 @@ YOUR PERSONA AND BEHAVIOUR:
 - If asked something outside your knowledge, say so and offer to connect them with the team`;
 
   const QUICK_REPLIES_INITIAL = [
-    "What does Simpl'IT do?",
-    "Oracle EBS vs Fusion Cloud",
-    "How long does an implementation take?",
-    "What is AMO?"
+    "Can you help with EBS to Cloud migration?",
+    "Our go-live went wrong — can you help?",
+    "How much does an implementation cost?",
+    "Do you work in Africa / Middle East?"
   ];
 
   // ── TOGGLE ──────────────────────────────────────────────────
@@ -447,23 +464,23 @@ YOUR PERSONA AND BEHAVIOUR:
     setTyping(true);
     history.push({ role: 'user', parts: [{ text }] });
 
-    // Build contents: system prompt as first user/model exchange, then real history
-    const contents = [
-      { role: 'user',  parts: [{ text: 'You are Aria. Here are your instructions:\n\n' + SYSTEM_PROMPT }] },
-      { role: 'model', parts: [{ text: 'Understood. I am Aria, ready to help.' }] },
-      ...history
-    ];
-
     try {
+      // Build contents: system prompt as first user/model exchange, then real history
+      const contents = [
+        { role: 'user',  parts: [{ text: 'You are Aria. Here are your instructions:\n\n' + SYSTEM_PROMPT }] },
+        { role: 'model', parts: [{ text: 'Understood. I am Aria, ready to help.' }] },
+        ...history
+      ];
+
       const res  = await fetch(PROXY_URL, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ contents })
-      });
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents })
+        }
+      );
       const data  = await res.json();
       const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text
         || "I'm having a moment — please try again or reach out at contact@simplitconsulting.com.";
-
       addBot(reply);
       history.push({ role: 'model', parts: [{ text: reply }] });
 
@@ -472,7 +489,6 @@ YOUR PERSONA AND BEHAVIOUR:
         setTimeout(showNudge, 800);
       }
     } catch (e) {
-      console.error('Aria error:', e);
       addBot("I'm having a moment — please try again or reach out to us at contact@simplitconsulting.com.");
     }
 
@@ -489,6 +505,7 @@ YOUR PERSONA AND BEHAVIOUR:
     av.className = 'aria-msg-av aria-av-aria';
     av.textContent = 'A';
 
+    // Wrapper holds bubble + quick replies stacked
     const right = document.createElement('div');
     right.style.cssText = 'display:flex;flex-direction:column;gap:8px;max-width:85%;';
 
@@ -606,11 +623,11 @@ YOUR PERSONA AND BEHAVIOUR:
       .join('\n\n');
 
     const leadData = {
-      id:        'ARIA_' + Date.now(),
+      id: 'ARIA_' + Date.now(),
       timestamp: new Date().toISOString(),
-      source:    'Aria Chat Widget',
-      contact:   { name, email, company, notes: 'Lead from Aria chat widget' },
-      profile:   { persona: 'unknown', industry: 'unknown', situation: 'chat_inquiry', painPoints: [], domains: [], currentSystem: 'unknown', companySize: 'unknown' }
+      source: 'Aria Chat Widget',
+      contact: { name, email, company, notes: 'Lead from Aria chat widget' },
+      profile: { persona: 'unknown', industry: 'unknown', situation: 'chat_inquiry', painPoints: [], domains: [], currentSystem: 'unknown', companySize: 'unknown' }
     };
 
     try {
@@ -650,9 +667,11 @@ YOUR PERSONA AND BEHAVIOUR:
   function fmt(text) {
     return '<p>' + text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g,   '<em>$1</em>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/\[(.*?)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+      .replace(/https?:\/\/[^\s<>"]+/g, url => `<a href="${url}" target="_blank" rel="noopener">${url}</a>`)
       .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g,   '<br>') + '</p>';
+      .replace(/\n/g, '<br>') + '</p>';
   }
 
   function scrollDown() {
