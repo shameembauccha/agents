@@ -7,13 +7,13 @@
 
   if (document.getElementById('aria-widget')) return;
 
-  // ── CONFIG ──────────────────────────────────────────────────
+  // -- CONFIG --------------------------------------------------
   var PROXY_URL      = 'https://simplitconsulting.com/wp-json/simplit/v1/aria';
   var EMAILJS_SVC    = 'service_rs59uuo';
   var EMAILJS_TPL    = 'template_el8vjzi';
   var EMAILJS_KEY    = 'htvC-XwdHLSAXmhnv';
 
-  // ── FONTS ───────────────────────────────────────────────────
+  // -- FONTS ---------------------------------------------------
   if (!document.querySelector('link[href*="fonts.googleapis.com/css2?family=DM"]')) {
     var fl = document.createElement('link');
     fl.rel  = 'stylesheet';
@@ -21,7 +21,7 @@
     document.head.appendChild(fl);
   }
 
-  // ── STYLES ──────────────────────────────────────────────────
+  // -- STYLES --------------------------------------------------
   var style = document.createElement('style');
   style.id = 'aria-styles';
   style.textContent = [
@@ -122,7 +122,7 @@
   ].join('\n');
   document.head.appendChild(style);
 
-  // ── HTML ────────────────────────────────────────────────────
+  // -- HTML ----------------------------------------------------
   var widget = document.createElement('div');
   widget.id = 'aria-widget';
   widget.innerHTML = '<button class="aria-bubble" id="ariaBubble" aria-label="Chat with Aria">'
@@ -148,13 +148,13 @@
     + '<div class="aria-qr-menu" id="ariaQrMenu"></div>';
   document.body.appendChild(widget);
 
-  // ── EMAILJS ─────────────────────────────────────────────────
+  // -- EMAILJS -------------------------------------------------
   var ejs = document.createElement('script');
   ejs.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
   ejs.onload = function() { emailjs.init(EMAILJS_KEY); };
   document.head.appendChild(ejs);
 
-  // ── STATE ───────────────────────────────────────────────────
+  // -- STATE ---------------------------------------------------
   var isOpen        = false;
   var isTyping      = false;
   var messageCount  = 0;
@@ -214,7 +214,7 @@
     'How is AI changing Oracle?'
   ];
 
-  // ── TOGGLE ──────────────────────────────────────────────────
+  // -- TOGGLE --------------------------------------------------
   function toggle() {
     isOpen = !isOpen;
     document.getElementById('ariaPanel').classList.toggle('open', isOpen);
@@ -236,7 +236,7 @@
     );
   }
 
-  // ── SEND ────────────────────────────────────────────────────
+  // -- SEND ----------------------------------------------------
   function send(override) {
     var input = document.getElementById('ariaInput');
     var text  = (override || input.value).trim();
@@ -248,7 +248,7 @@
     setTyping(true);
     history.push({ role: 'user', parts: [{ text: text }] });
 
-    // Build last user message — add attachment if present
+    // Build last user message - add attachment if present
     var lastMsg = history[history.length - 1];
     if (attachedFile) {
       lastMsg = { role: 'user', parts: [
@@ -293,7 +293,7 @@
     });
   }
 
-  // ── RENDER ──────────────────────────────────────────────────
+  // -- RENDER --------------------------------------------------
   function addBot(text, qr, qr2) {
     var msgs = document.getElementById('ariaMessages');
     var msg  = document.createElement('div');
@@ -407,7 +407,7 @@
     }
   }
 
-  // ── NUDGE ───────────────────────────────────────────────────
+  // -- NUDGE ---------------------------------------------------
   function showNudge() {
     var msgs = document.getElementById('ariaMessages');
     var wrap = document.createElement('div');
@@ -457,7 +457,7 @@
     addBot('No problem - I\'m here whenever you need me.');
   }
 
-  // ── EMAIL ───────────────────────────────────────────────────
+  // -- EMAIL ---------------------------------------------------
   function sendEmail(toEmail, toName, toCompany) {
     if (emailSent || emailSending) return;
     emailSending = true;
@@ -512,7 +512,7 @@
     });
   }
 
-  // ── TRANSCRIPT PROMPT ────────────────────────────────────────
+  // -- TRANSCRIPT PROMPT ----------------------------------------
   function showTranscriptPrompt() {
     if (transcriptShown || emailSent) return;
     transcriptShown = true;
@@ -558,7 +558,7 @@
     }
   }
 
-  // ── CLEAR ───────────────────────────────────────────────────
+  // -- CLEAR ---------------------------------------------------
   function clearChat() {
     history = []; messageCount = 0; nudgeShown = false; leadCaptured = false;
     emailSent = false; emailSending = false; transcriptShown = false; visitorName = ''; visitorEmail = ''; visitorCompany = '';
@@ -567,7 +567,7 @@
     showWelcome();
   }
 
-  // ── FORMAT ──────────────────────────────────────────────────
+  // -- FORMAT --------------------------------------------------
   function timeNow() {
     var d = new Date();
     var h = d.getHours(), m = d.getMinutes();
@@ -589,7 +589,7 @@
     setTimeout(function() { m.scrollTop = m.scrollHeight; }, 50);
   }
 
-  // ── EVENTS ──
+  // -- EVENTS --
   setTimeout(function() {
     document.getElementById('ariaBubble').addEventListener('click', toggle);
     document.getElementById('ariaCloseBtn').addEventListener('click', toggle);
@@ -604,7 +604,7 @@
       this.style.height = Math.min(this.scrollHeight, 100) + 'px';
     });
   
-    // ? button - question menu
+    // - button - question menu
     document.getElementById('ariaQrBtn').addEventListener('click', function(e) {
       e.stopPropagation();
       var menu = document.getElementById('ariaQrMenu');
@@ -632,7 +632,7 @@
       addSection('Discover us', QR_DISCOVER);
       addSection('Common questions', QR_COMMON);
   
-      // Position menu below the ? button
+      // Position menu below the - button
       var btn = document.getElementById('ariaQrBtn');
       var rect = btn.getBoundingClientRect();
       menu.style.right     = (window.innerWidth - rect.right) + 'px';
@@ -657,7 +657,7 @@
       if (m) m.style.display = 'none';
     });
 
-    // ── MIC / SPEECH ───────────────────────────────────────────
+    // -- MIC / SPEECH -------------------------------------------
     var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     var micBtn = document.getElementById('ariaMicBtn');
     if (SR) {
@@ -698,7 +698,7 @@
       micBtn.style.cursor = 'not-allowed';
     }
 
-    // ── FILE ATTACHMENT ─────────────────────────────────────────
+    // -- FILE ATTACHMENT -----------------------------------------
     var attachBtn  = document.getElementById('ariaAttachBtn');
     var fileInput  = document.getElementById('ariaFileInput');
     var attachPrev = document.getElementById('ariaAttachPreview');
