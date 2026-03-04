@@ -80,8 +80,8 @@
 
     .aria-panel {
       position: fixed; bottom: 90px; right: 24px;
-      width: 420px;
-      height: min(620px, calc(100vh - 120px));
+      width: 460px;
+      height: min(680px, calc(100vh - 110px));
       background: white; border-radius: 16px;
       box-shadow: 0 16px 56px rgba(15,15,15,0.18), 0 4px 16px rgba(15,15,15,0.08);
       display: flex; flex-direction: column; overflow: hidden;
@@ -98,55 +98,58 @@
     @media (max-width: 480px) {
       .aria-panel {
         width: calc(100vw - 16px);
-        height: calc(100dvh - 100px);
+        height: calc(100dvh - 90px);
         right: 8px;
-        bottom: 80px;
+        bottom: 76px;
       }
     }
 
     .aria-header {
       background: linear-gradient(135deg, #1a3a5c 0%, #2d5f8a 100%);
-      padding: 16px 18px;
-      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px;
+      display: flex; align-items: center; gap: 10px;
       flex-shrink: 0;
     }
     .aria-avatar {
-      width: 40px; height: 40px; border-radius: 50%;
+      width: 36px; height: 36px; border-radius: 50%;
       background: rgba(200,151,58,0.2);
       border: 2px solid rgba(200,151,58,0.4);
       display: flex; align-items: center; justify-content: center;
       font-family: 'Playfair Display', serif;
-      font-size: 1rem; font-weight: 700; color: #e8b85a; flex-shrink: 0;
+      font-size: 0.9rem; font-weight: 700; color: #e8b85a; flex-shrink: 0;
     }
-    .aria-header-info { flex: 1; }
+    .aria-header-info { flex: 1; min-width: 0; }
     .aria-agent-name {
       font-family: 'Playfair Display', serif;
-      font-size: 0.95rem; font-weight: 600; color: white; line-height: 1.2;
+      font-size: 0.9rem; font-weight: 600; color: white; line-height: 1.2;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .aria-agent-status {
-      font-size: 0.7rem; color: rgba(255,255,255,0.6);
-      display: flex; align-items: center; gap: 5px; margin-top: 2px;
+      font-size: 0.65rem; color: rgba(255,255,255,0.6);
+      display: flex; align-items: center; gap: 4px; margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .aria-agent-status::before {
-      content: ''; width: 6px; height: 6px;
+      content: ''; width: 5px; height: 5px;
       border-radius: 50%; background: #4ade80; flex-shrink: 0;
     }
-    .aria-header-btns { display: flex; gap: 8px; }
+    .aria-header-btns { display: flex; gap: 5px; flex-shrink: 0; }
     .aria-hdr-btn {
       background: rgba(255,255,255,0.1); border: none;
-      border-radius: 6px; width: 30px; height: 30px;
+      border-radius: 6px; width: 28px; height: 28px;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; color: rgba(255,255,255,0.7); font-size: 0.85rem;
+      cursor: pointer; color: rgba(255,255,255,0.7); font-size: 0.8rem;
       transition: background 0.15s; font-family: 'DM Sans', sans-serif;
+      flex-shrink: 0;
     }
     .aria-hdr-btn:hover { background: rgba(255,255,255,0.2); color: white; }
 
     .aria-qr-dropdown-wrap { position: relative; }
     .aria-qr-dropdown {
-      display: none; position: absolute; top: 38px; right: 0;
-      background: white; border-radius: 10px; min-width: 240px;
+      display: none; position: absolute; bottom: 38px; right: 0;
+      background: white; border-radius: 10px; min-width: 250px;
       box-shadow: 0 8px 32px rgba(15,15,15,0.15); padding: 8px 0;
-      z-index: 99999; max-height: 320px; overflow-y: auto;
+      z-index: 99999; max-height: 340px; overflow-y: auto;
     }
     .aria-qr-dropdown.open { display: block; }
     .aria-qr-drop-label {
@@ -595,11 +598,15 @@ YOUR PERSONA AND BEHAVIOUR:
     document.getElementById('ariaNotifDot').classList.add('aria-hidden');
     if (isOpen) {
       if (messageCount === 0) showWelcome();
-      setTimeout(() => document.getElementById('ariaInput').focus(), 300);
+      setTimeout(() => {
+        scrollDown();
+        document.getElementById('ariaInput').focus();
+      }, 350);
     }
   }
 
   function showWelcome() {
+    setTimeout(scrollDown, 100);
     addBot(
       `Hi, I'm **Aria** — Simpl'IT's Oracle specialist.\n\nWe're here to help you find your way through Oracle — whether you're exploring options, mid-project, or looking to get more from an existing implementation.\n\nNot sure where to start? Our guided journey can help: https://simplitconsulting.com/journey`,
       QUICK_REPLIES_DISCOVER, QUICK_REPLIES_COMMON
