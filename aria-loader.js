@@ -397,15 +397,15 @@
             <button class="aria-hdr-btn" id="ariaQrToggle" title="Suggested questions">?</button>
             <div class="aria-qr-dropdown" id="ariaQrDropdown">
               <div class="aria-qr-drop-label">Discover us</div>
-              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">Let us help you find your way →</button>
-              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">Who is Simpl'IT?</button>
-              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">What does Simpl'IT do?</button>
-              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">What makes Simpl'IT different?</button>
+              <button class="aria-qr-drop-item">Let us help you find your way →</button>
+              <button class="aria-qr-drop-item">Who is Simpl'IT?</button>
+              <button class="aria-qr-drop-item">What does Simpl'IT do?</button>
+              <button class="aria-qr-drop-item">What makes Simpl'IT different?</button>
               <div class="aria-qr-drop-label" style="margin-top:8px;">Common questions</div>
-              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">Can you help with EBS to Cloud migration?</button>
-              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">Our go-live went wrong — can you help?</button>
-              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">How much does an implementation cost?</button>
-              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">How is AI changing Oracle?</button>
+              <button class="aria-qr-drop-item">Can you help with EBS to Cloud migration?</button>
+              <button class="aria-qr-drop-item">Our go-live went wrong — can you help?</button>
+              <button class="aria-qr-drop-item">How much does an implementation cost?</button>
+              <button class="aria-qr-drop-item">How is AI changing Oracle?</button>
             </div>
           </div>
           <button class="aria-hdr-btn" id="ariaTranscriptBtn" title="Email me this conversation">✉</button>
@@ -954,12 +954,21 @@ YOUR PERSONA AND BEHAVIOUR:
     qrDropdown.classList.toggle('open');
   });
 
-  document.addEventListener('click', () => qrDropdown.classList.remove('open'));
+  // Event delegation — works inside IIFE, no global scope needed
+  qrDropdown.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const item = e.target.closest('.aria-qr-drop-item');
+    if (item) {
+      qrDropdown.classList.remove('open');
+      send(item.textContent.trim());
+    }
+  });
 
-  function ariaAskFromMenu(btn) {
-    qrDropdown.classList.remove('open');
-    send(btn.textContent.trim());
-  }
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#ariaQrWrap')) {
+      qrDropdown.classList.remove('open');
+    }
+  });
 
   // ── TRANSCRIPT ───────────────────────────────────────────────
   let transcriptSent = false;
@@ -967,10 +976,10 @@ YOUR PERSONA AND BEHAVIOUR:
 
   function resetInactivityTimer() {
     clearTimeout(inactivityTimer);
-    if (messageCount >= 2 && !transcriptSent) {
+    if (messageCount >= 2 && !transcriptSent && !leadCaptured) {
       inactivityTimer = setTimeout(() => {
-        if (isOpen && messageCount >= 2 && !transcriptSent) showTranscriptPrompt();
-      }, 10 * 60 * 1000); // 10 minutes
+        if (isOpen && messageCount >= 2 && !transcriptSent && !leadCaptured) showTranscriptPrompt();
+      }, 10 * 60 * 1000); // 10 minutes inactivity
     }
   }
 
@@ -1080,7 +1089,7 @@ CONVERSATION:
       }
     } catch(e) { console.error('Transcript email error:', e); }
 
-    addBot(`Done! A summary of our conversation is on its way to \${email}. Feel free to reach out anytime — we're here to help.`);
+    addBot(`Done! A summary of our conversation is on its way to ${email}. Feel free to reach out anytime — we're here to help.`);
   }
 
   function dismissTranscript() {
@@ -1095,6 +1104,8 @@ CONVERSATION:
   document.getElementById('ariaTranscriptBtn').addEventListener('click', () => {
     if (messageCount < 1) {
       addBot("We haven't chatted yet! Ask me anything and then I can send you a transcript.");
+    } else if (transcriptSent) {
+      addBot("I've already sent your transcript. Is there anything else I can help you with?");
     } else {
       showTranscriptPrompt();
     }
