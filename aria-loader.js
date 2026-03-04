@@ -39,7 +39,7 @@
     '.aria-notif-dot { position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; background: #c8973a; border-radius: 50%; border: 2px solid white; }',
     '.aria-notif-dot.aria-hidden { display: none; }',
 
-    '.aria-panel { position: fixed; bottom: 90px; right: 24px; width: 460px; height: 680px; max-height: calc(100vh - 110px); background: white; border-radius: 16px; box-shadow: 0 16px 56px rgba(15,15,15,0.18); display: flex; flex-direction: column; overflow: hidden; transform-origin: bottom right; transform: scale(0.85) translateY(16px); opacity: 0; pointer-events: none; transition: transform 0.25s cubic-bezier(0.34,1.4,0.64,1), opacity 0.2s ease; z-index: 999998; }',
+    '.aria-panel { position: fixed; bottom: 90px; right: 24px; width: 500px; height: 760px; max-height: calc(100vh - 100px); background: white; border-radius: 16px; box-shadow: 0 16px 56px rgba(15,15,15,0.18); display: flex; flex-direction: column; overflow: hidden; transform-origin: bottom right; transform: scale(0.85) translateY(16px); opacity: 0; pointer-events: none; transition: transform 0.25s cubic-bezier(0.34,1.4,0.64,1), opacity 0.2s ease; z-index: 999998; }',
     '.aria-panel.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }',
     '@media (max-width: 520px) { .aria-panel { width: calc(100vw - 16px); right: 8px; bottom: 80px; height: calc(100vh - 100px); max-height: none; } }',
 
@@ -100,6 +100,13 @@
     '.aria-input:focus { border-color: #1a3a5c; background: white; color: #1a1a1a; }',
     '.aria-input::placeholder { color: #b0a898; }',
     '.aria-send-btn { width: 36px; height: 36px; border-radius: 50%; background: #1a3a5c; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }',
+    '.aria-icon-btn { width: 32px; height: 32px; border-radius: 50%; background: none; border: 1.5px solid #d8d3c8; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; color: #6b6457; }',
+    '.aria-icon-btn:hover { background: #f0ede4; border-color: #b0a898; }',
+    '.aria-icon-btn.recording { background: #fee2e2; border-color: #ef4444; color: #ef4444; animation: ariaPulse 1s ease-in-out infinite; }',
+    '@keyframes ariaPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }',
+    '.aria-icon-btn svg { width: 15px; height: 15px; fill: currentColor; }',
+    '.aria-attach-preview { display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0ede4; border-radius: 10px; margin: 0 14px 6px; font-size: 0.75rem; color: #1a3a5c; }',
+    '.aria-attach-preview button { background: none; border: none; cursor: pointer; color: #b0a898; font-size: 0.85rem; padding: 0 2px; }',
     '.aria-send-btn:hover { background: #2d5f8a; }',
     '.aria-send-btn:disabled { background: #d8d3c8; cursor: not-allowed; }',
     '.aria-send-btn svg { width: 16px; height: 16px; fill: white; }',
@@ -128,10 +135,7 @@
     + '</div>'
     + '</div>'
     + '<div class="aria-messages" id="ariaMessages"></div>'
-    + '<div class="aria-input-row">'
-    + '<textarea class="aria-input" id="ariaInput" placeholder="Ask me anything about Oracle..." rows="1"></textarea>'
-    + '<button class="aria-send-btn" id="ariaSendBtn"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>'
-    + '</div>'
+    + '<div id="ariaAttachPreview" style="display:none;" class="aria-attach-preview"><span id="ariaAttachName"></span><button id="ariaAttachRemove">&#10005;</button></div>'    + '<div class="aria-input-row">'    + '<button class="aria-icon-btn" id="ariaMicBtn" title="Voice input"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg></button>'    + '<input type="file" id="ariaFileInput" accept="image/*,.pdf" style="display:none;" />'    + '<button class="aria-icon-btn" id="ariaAttachBtn" title="Attach file"><svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>'    + '<textarea class="aria-input" id="ariaInput" placeholder="Ask me anything about Oracle..." rows="1"></textarea>'    + '<button class="aria-send-btn" id="ariaSendBtn"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>'    + '</div>'
     + '<div class="aria-footer-tag">Simpl\'IT Consulting &middot; Oracle, Simplified.</div>'
     + '</div>'
     + '<div class="aria-qr-menu" id="ariaQrMenu"></div>';
@@ -157,6 +161,7 @@
   var visitorCompany = '';
   var inactivityTimer = null;
   var history       = [];
+  var attachedFile  = null;  // { data: base64, mimeType, name }
 
   var SYSTEM_PROMPT = 'You are Aria, Simpl\'IT Consulting\'s Oracle specialist assistant.\n\n'
     + 'ABOUT SIMPL\'IT:\n'
@@ -235,6 +240,19 @@
     messageCount++;
     setTyping(true);
     history.push({ role: 'user', parts: [{ text: text }] });
+
+    // Build last user message — add attachment if present
+    var lastMsg = history[history.length - 1];
+    if (attachedFile) {
+      lastMsg = { role: 'user', parts: [
+        { inline_data: { mime_type: attachedFile.mimeType, data: attachedFile.data } },
+        { text: text }
+      ]};
+      history[history.length - 1] = lastMsg;
+      attachedFile = null;
+      var prev = document.getElementById('ariaAttachPreview');
+      if (prev) prev.style.display = 'none';
+    }
 
     var contents = [
       { role: 'user',  parts: [{ text: 'You are Aria. Instructions:\n\n' + SYSTEM_PROMPT }] },
@@ -460,7 +478,7 @@
       lead_title:   'Oracle Consultation Summary - Simpl\'IT',
       lead_email:   toEmail,
       reply_to:     'contact@simplitconsulting.com',
-      cc_email:     'shameembauccha@simplitconsulting.com'
+      cc_email:     ''
     });
   }
 
@@ -602,11 +620,82 @@
       var m = document.getElementById('ariaQrMenu');
       if (m) m.style.display = 'none';
     });
-  
+
+    // ── MIC / SPEECH ───────────────────────────────────────────
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var micBtn = document.getElementById('ariaMicBtn');
+    if (SR) {
+      var recognition = new SR();
+      recognition.lang = 'en-US';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      var isRecording = false;
+
+      micBtn.addEventListener('click', function() {
+        if (isRecording) {
+          recognition.stop();
+        } else {
+          try { recognition.start(); } catch(e) { return; }
+          isRecording = true;
+          micBtn.classList.add('recording');
+          micBtn.title = 'Listening... click to stop';
+        }
+      });
+
+      recognition.onresult = function(e) {
+        var transcript = e.results[0][0].transcript;
+        document.getElementById('ariaInput').value = transcript;
+        isRecording = false;
+        micBtn.classList.remove('recording');
+        micBtn.title = 'Voice input';
+        send(transcript);
+      };
+
+      recognition.onerror = recognition.onend = function() {
+        isRecording = false;
+        micBtn.classList.remove('recording');
+        micBtn.title = 'Voice input';
+      };
+    } else {
+      micBtn.title = 'Voice not supported in this browser';
+      micBtn.style.opacity = '0.4';
+      micBtn.style.cursor = 'not-allowed';
+    }
+
+    // ── FILE ATTACHMENT ─────────────────────────────────────────
+    var attachBtn  = document.getElementById('ariaAttachBtn');
+    var fileInput  = document.getElementById('ariaFileInput');
+    var attachPrev = document.getElementById('ariaAttachPreview');
+    var attachName = document.getElementById('ariaAttachName');
+    var attachRem  = document.getElementById('ariaAttachRemove');
+
+    attachBtn.addEventListener('click', function() { fileInput.click(); });
+
+    fileInput.addEventListener('change', function() {
+      var file = fileInput.files[0];
+      if (!file) return;
+      if (file.size > 10 * 1024 * 1024) { alert('File too large. Max 10MB.'); return; }
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var base64 = e.target.result.split(',')[1];
+        attachedFile = { data: base64, mimeType: file.type, name: file.name };
+        attachName.textContent = file.name;
+        attachPrev.style.display = 'flex';
+      };
+      reader.readAsDataURL(file);
+      fileInput.value = '';
+    });
+
+    attachRem.addEventListener('click', function() {
+      attachedFile = null;
+      attachPrev.style.display = 'none';
+      attachName.textContent = '';
+    });
+
     setTimeout(function() {
       var dot = document.getElementById('ariaNotifDot');
       if (dot) dot.classList.remove('aria-hidden');
     }, 8000);
-  
+
   }, 0);
 })();
