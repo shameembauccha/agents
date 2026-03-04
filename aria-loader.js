@@ -985,7 +985,7 @@ YOUR PERSONA AND BEHAVIOUR:
 
     const card = document.createElement('div');
     card.className = 'aria-transcript-card';
-    card.innerHTML = \`
+    card.innerHTML = `
       <h4>Would you like a transcript?</h4>
       <p>I can email you a summary of our conversation with the key points we covered.</p>
       <input type="email" id="ariaTranscriptEmail" placeholder="Your email address" />
@@ -993,7 +993,7 @@ YOUR PERSONA AND BEHAVIOUR:
         <button class="aria-transcript-submit" id="ariaTranscriptSubmit">Send me the transcript →</button>
         <button class="aria-transcript-skip" id="ariaTranscriptSkip">No thanks</button>
       </div>
-    \`;
+    `;
 
     wrap.appendChild(av);
     wrap.appendChild(card);
@@ -1013,7 +1013,7 @@ YOUR PERSONA AND BEHAVIOUR:
 
     // Build structured summary for AI
     const rawHistory = history
-      .map(m => \`\${m.role === 'user' ? 'Visitor' : 'Aria'}: \${m.parts[0].text}\`)
+      .map(m => `\${m.role === 'user' ? 'Visitor' : 'Aria'}: \${m.parts[0].text}`)
       .join('\n\n');
 
     // Ask Gemini to produce a structured summary
@@ -1024,7 +1024,7 @@ YOUR PERSONA AND BEHAVIOUR:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [
-            { role: 'user', parts: [{ text: \`You are a business analyst assistant. Based on the following Oracle consulting chat conversation, produce a concise, structured email summary with these sections:
+            { role: 'user', parts: [{ text: `You are a business analyst assistant. Based on the following Oracle consulting chat conversation, produce a concise, structured email summary with these sections:
 1. Visitor Profile (what you know about them — company, role, region if mentioned)
 2. Key Topics Discussed
 3. Pain Points / Challenges Identified
@@ -1034,7 +1034,7 @@ YOUR PERSONA AND BEHAVIOUR:
 Keep it professional and concise. Address the visitor directly.
 
 CONVERSATION:
-\${rawHistory.substring(0, 3000)}\` }] }
+\${rawHistory.substring(0, 3000)}` }] }
           ]
         })
       });
@@ -1074,7 +1074,7 @@ CONVERSATION:
       }
     } catch(e) { console.error('Transcript email error:', e); }
 
-    addBot(\`Done! A summary of our conversation is on its way to \${email}. Feel free to reach out anytime — we're here to help.\`);
+    addBot(`Done! A summary of our conversation is on its way to \${email}. Feel free to reach out anytime — we're here to help.`);
   }
 
   function dismissTranscript() {
