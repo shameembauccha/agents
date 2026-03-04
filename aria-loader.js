@@ -79,6 +79,8 @@
     '.aria-bubble-msg ul { padding-left: 16px; margin: 6px 0; } .aria-bubble-msg li { margin-bottom: 3px; }',
     '.aria-bubble-msg a { color: #c8973a; text-decoration: underline; }',
     '.aria-bubble-msg a:hover { color: #1a3a5c; }',
+    '.aria-msg-time { font-size: 0.62rem; color: #b0a898; margin-top: 2px; padding: 0 2px; }',
+    '.aria-msg.aria-user .aria-msg-time { text-align: right; }',
 
     '.aria-typing { display: flex; gap: 4px; align-items: center; padding: 12px 14px; }',
     '.aria-typing span { width: 6px; height: 6px; border-radius: 50%; background: #6b6457; animation: ariaTyping 1.2s ease-in-out infinite; }',
@@ -339,6 +341,11 @@
       right.appendChild(qrBlock);
     }
 
+    var time = document.createElement('div');
+    time.className = 'aria-msg-time';
+    time.textContent = timeNow();
+    right.appendChild(time);
+
     msg.appendChild(av);
     msg.appendChild(right);
     msgs.appendChild(msg);
@@ -360,9 +367,14 @@
     tick.id = 'ariaTick_' + Date.now();
     tick.textContent = '✓✓';
 
+    var utime = document.createElement('div');
+    utime.className = 'aria-msg-time';
+    utime.textContent = timeNow();
+
     var wrapper = document.createElement('div');
     wrapper.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;';
     wrapper.appendChild(bubble);
+    wrapper.appendChild(utime);
     wrapper.appendChild(tick);
 
     msg.appendChild(av);
@@ -556,6 +568,12 @@
   }
 
   // ── FORMAT ──────────────────────────────────────────────────
+  function timeNow() {
+    var d = new Date();
+    var h = d.getHours(), m = d.getMinutes();
+    return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+  }
+
   function fmt(text) {
     return '<p>' + text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
