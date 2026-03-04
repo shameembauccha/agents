@@ -79,8 +79,9 @@
     .aria-notif-dot.aria-hidden { display: none; }
 
     .aria-panel {
-      position: absolute; bottom: 72px; right: 0;
-      width: 420px; height: 620px;
+      position: fixed; bottom: 90px; right: 24px;
+      width: 420px;
+      height: min(620px, calc(100vh - 120px));
       background: white; border-radius: 16px;
       box-shadow: 0 16px 56px rgba(15,15,15,0.18), 0 4px 16px rgba(15,15,15,0.08);
       display: flex; flex-direction: column; overflow: hidden;
@@ -88,15 +89,18 @@
       transform: scale(0.85) translateY(16px);
       opacity: 0; pointer-events: none;
       transition: transform 0.25s cubic-bezier(0.34,1.4,0.64,1), opacity 0.2s ease;
+      z-index: 999998;
     }
     .aria-panel.open {
       transform: scale(1) translateY(0);
       opacity: 1; pointer-events: all;
     }
-    @media (max-width: 440px) {
+    @media (max-width: 480px) {
       .aria-panel {
-        width: calc(100vw - 32px);
-        height: calc(100vh - 110px);
+        width: calc(100vw - 16px);
+        height: calc(100dvh - 100px);
+        right: 8px;
+        bottom: 80px;
       }
     }
 
@@ -136,6 +140,64 @@
       transition: background 0.15s; font-family: 'DM Sans', sans-serif;
     }
     .aria-hdr-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+
+    .aria-qr-dropdown-wrap { position: relative; }
+    .aria-qr-dropdown {
+      display: none; position: absolute; top: 38px; right: 0;
+      background: white; border-radius: 10px; min-width: 240px;
+      box-shadow: 0 8px 32px rgba(15,15,15,0.15); padding: 8px 0;
+      z-index: 99999; max-height: 320px; overflow-y: auto;
+    }
+    .aria-qr-dropdown.open { display: block; }
+    .aria-qr-drop-label {
+      font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #b0a898;
+      font-family: 'DM Mono', monospace;
+      padding: 6px 14px 4px;
+    }
+    .aria-qr-drop-item {
+      display: block; width: 100%; text-align: left;
+      background: none; border: none; padding: 7px 14px;
+      font-size: 0.8rem; color: #1a3a5c; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; line-height: 1.4;
+      transition: background 0.12s;
+    }
+    .aria-qr-drop-item:hover { background: #f0ede4; }
+
+    .aria-transcript-card {
+      background: linear-gradient(135deg, #1a3a5c, #2d5f8a);
+      border-radius: 12px; padding: 14px 16px; margin-top: 4px; color: white;
+    }
+    .aria-transcript-card h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.9rem; margin: 0 0 6px; font-weight: 600;
+    }
+    .aria-transcript-card p {
+      font-size: 0.76rem; opacity: 0.75; margin: 0 0 10px; line-height: 1.5;
+    }
+    .aria-transcript-card input {
+      width: 100%; padding: 8px 10px; border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.1); color: white;
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
+      margin-bottom: 8px; outline: none;
+    }
+    .aria-transcript-card input::placeholder { color: rgba(255,255,255,0.4); }
+    .aria-transcript-card input:focus { border-color: #e8b85a; }
+    .aria-transcript-btns { display: flex; gap: 8px; margin-top: 4px; }
+    .aria-transcript-submit {
+      flex: 1; background: #c8973a; color: white; border: none;
+      border-radius: 6px; padding: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+      font-weight: 600; cursor: pointer; transition: background 0.15s;
+    }
+    .aria-transcript-submit:hover { background: #e8b85a; }
+    .aria-transcript-skip {
+      background: transparent; color: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 6px;
+      padding: 8px 12px; font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem; cursor: pointer;
+    }
 
     .aria-messages {
       flex: 1; overflow-y: auto;
@@ -327,7 +389,23 @@
           <div class="aria-agent-status">Simpl'IT Oracle Specialist · Online</div>
         </div>
         <div class="aria-header-btns">
-          <button class="aria-hdr-btn" id="ariaClearBtn" title="New conversation">↺</button>
+          <div class="aria-qr-dropdown-wrap" id="ariaQrWrap">
+            <button class="aria-hdr-btn" id="ariaQrToggle" title="Suggested questions">?</button>
+            <div class="aria-qr-dropdown" id="ariaQrDropdown">
+              <div class="aria-qr-drop-label">Discover us</div>
+              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">Let us help you find your way →</button>
+              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">Who is Simpl'IT?</button>
+              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">What does Simpl'IT do?</button>
+              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">What makes Simpl'IT different?</button>
+              <div class="aria-qr-drop-label" style="margin-top:8px;">Common questions</div>
+              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">Can you help with EBS to Cloud migration?</button>
+              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">Our go-live went wrong — can you help?</button>
+              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">How much does an implementation cost?</button>
+              <button class="aria-qr-drop-item" onclick="ariaAskFromMenu(this)">How is AI changing Oracle?</button>
+            </div>
+          </div>
+          <button class="aria-hdr-btn" id="ariaTranscriptBtn" title="Email me this conversation">✉</button>
+          <button class="aria-hdr-btn" id="ariaClearBtn" title="Clear conversation">↺</button>
           <button class="aria-hdr-btn" id="ariaCloseBtn" title="Close">✕</button>
         </div>
       </div>
@@ -383,12 +461,15 @@ SITE PAGES — link to these naturally and proactively when relevant:
 - Start your journey: https://simplitconsulting.com/journey
 - Contact the team: https://simplitconsulting.com/contact
 
-JOURNEY PAGE — your highest priority conversion path:
-- The Journey page is always the most important next step for any visitor: https://simplitconsulting.com/journey
-- Recommend it warmly after 1-2 exchanges — frame it as "let us help you find your way"
+JOURNEY PAGE — high priority conversion path:
+- Recommend the Journey page warmly after 1-2 exchanges for most visitors: https://simplitconsulting.com/journey
 - Use language like: "The best way forward is our guided journey — it only takes a few minutes and helps us point you in exactly the right direction: simplitconsulting.com/journey"
 - If a visitor clicks "Let us help you find your way →" as their first message, respond warmly and link directly to the Journey page immediately
-- Never push aggressively — but always keep it visible as the natural next step
+- SUPPRESS Journey recommendation when:
+  * The visitor is clearly an Oracle practitioner (asks about FBDI, SLA config, API specs, ADFdi, OIC, OTBI, specific module configuration)
+  * The visitor has an urgent problem (go-live failure, data issue, system down, production bug) — focus on helping them first
+  * The visitor has already been directed to the Journey page in this conversation
+- Never push aggressively — read the conversation and use good judgment
 
 IDENTITY & DIFFERENTIATORS — answer these confidently:
 When asked "Who is Simpl'IT?":
@@ -576,6 +657,7 @@ YOUR PERSONA AND BEHAVIOUR:
     }
 
     setTyping(false);
+    resetInactivityTimer();
   }
 
   // ── RENDER ──────────────────────────────────────────────────
@@ -758,6 +840,7 @@ YOUR PERSONA AND BEHAVIOUR:
   // ── CLEAR ───────────────────────────────────────────────────
   function clearChat() {
     history = []; messageCount = 0; nudgeShown = false; leadCaptured = false;
+    transcriptSent = false; clearTimeout(inactivityTimer);
     document.getElementById('ariaMessages').innerHTML = '';
     showWelcome();
   }
@@ -853,10 +936,156 @@ YOUR PERSONA AND BEHAVIOUR:
     reader.readAsDataURL(file);
   });
 
+  // ── QUICK REPLIES DROPDOWN ──────────────────────────────────
+  const qrToggle   = document.getElementById('ariaQrToggle');
+  const qrDropdown = document.getElementById('ariaQrDropdown');
+
+  qrToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    qrDropdown.classList.toggle('open');
+  });
+
+  document.addEventListener('click', () => qrDropdown.classList.remove('open'));
+
+  function ariaAskFromMenu(btn) {
+    qrDropdown.classList.remove('open');
+    send(btn.textContent.trim());
+  }
+
+  // ── TRANSCRIPT ───────────────────────────────────────────────
+  let transcriptSent = false;
+  let inactivityTimer = null;
+
+  function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    if (messageCount >= 2 && !transcriptSent) {
+      inactivityTimer = setTimeout(() => {
+        if (isOpen && messageCount >= 2 && !transcriptSent) showTranscriptPrompt();
+      }, 10 * 60 * 1000); // 10 minutes
+    }
+  }
+
+  function showTranscriptPrompt() {
+    if (transcriptSent) return;
+    const msgs = document.getElementById('ariaMessages');
+    const wrap = document.createElement('div');
+    wrap.className = 'aria-msg aria-bot';
+    wrap.id = 'ariaTranscriptPrompt';
+
+    const av = document.createElement('div');
+    av.className = 'aria-msg-av aria-av-aria';
+    av.textContent = 'A';
+
+    const card = document.createElement('div');
+    card.className = 'aria-transcript-card';
+    card.innerHTML = \`
+      <h4>Would you like a transcript?</h4>
+      <p>I can email you a summary of our conversation with the key points we covered.</p>
+      <input type="email" id="ariaTranscriptEmail" placeholder="Your email address" />
+      <div class="aria-transcript-btns">
+        <button class="aria-transcript-submit" id="ariaTranscriptSubmit">Send me the transcript →</button>
+        <button class="aria-transcript-skip" id="ariaTranscriptSkip">No thanks</button>
+      </div>
+    \`;
+
+    wrap.appendChild(av);
+    wrap.appendChild(card);
+    msgs.appendChild(wrap);
+    scrollDown();
+
+    document.getElementById('ariaTranscriptSubmit').onclick = submitTranscript;
+    document.getElementById('ariaTranscriptSkip').onclick   = dismissTranscript;
+  }
+
+  async function submitTranscript() {
+    const email = document.getElementById('ariaTranscriptEmail')?.value.trim();
+    if (!email) { alert('Please enter your email address.'); return; }
+
+    transcriptSent = true;
+    document.getElementById('ariaTranscriptPrompt')?.remove();
+
+    // Build structured summary for AI
+    const rawHistory = history
+      .map(m => \`\${m.role === 'user' ? 'Visitor' : 'Aria'}: \${m.parts[0].text}\`)
+      .join('\n\n');
+
+    // Ask Gemini to produce a structured summary
+    let structuredSummary = rawHistory;
+    try {
+      const sumRes = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [
+            { role: 'user', parts: [{ text: \`You are a business analyst assistant. Based on the following Oracle consulting chat conversation, produce a concise, structured email summary with these sections:
+1. Visitor Profile (what you know about them — company, role, region if mentioned)
+2. Key Topics Discussed
+3. Pain Points / Challenges Identified
+4. Services of Interest
+5. Recommended Next Steps
+
+Keep it professional and concise. Address the visitor directly.
+
+CONVERSATION:
+\${rawHistory.substring(0, 3000)}\` }] }
+          ]
+        })
+      });
+      const sumData = await sumRes.json();
+      structuredSummary = sumData?.candidates?.[0]?.content?.parts?.[0]?.text || rawHistory;
+    } catch(e) { console.warn('Summary generation failed, using raw transcript'); }
+
+    // Send to visitor
+    try {
+      if (typeof emailjs !== 'undefined') {
+        await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+          lead_id:      'TRANSCRIPT_' + Date.now(),
+          lead_name:    'Aria Chat Visitor',
+          lead_company: '',
+          lead_title:   'Aria Conversation Transcript',
+          lead_email:   email,
+          lead_phone:   '',
+          lead_notes:   'Transcript requested by visitor',
+          profile_text: structuredSummary,
+          lead_json:    JSON.stringify({ timestamp: new Date().toISOString(), source: 'Aria Transcript Request', email }),
+          timestamp:    new Date().toISOString()
+        });
+
+        // Copy to Simpl'IT
+        await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+          lead_id:      'TRANSCRIPT_COPY_' + Date.now(),
+          lead_name:    'Aria Chat Visitor',
+          lead_company: '',
+          lead_title:   '[Internal Copy] Aria Conversation — ' + email,
+          lead_email:   'contact@simplitconsulting.com',
+          lead_phone:   '',
+          lead_notes:   'Internal copy of visitor transcript',
+          profile_text: structuredSummary,
+          lead_json:    JSON.stringify({ timestamp: new Date().toISOString(), visitorEmail: email }),
+          timestamp:    new Date().toISOString()
+        });
+      }
+    } catch(e) { console.error('Transcript email error:', e); }
+
+    addBot(\`Done! A summary of our conversation is on its way to \${email}. Feel free to reach out anytime — we're here to help.\`);
+  }
+
+  function dismissTranscript() {
+    document.getElementById('ariaTranscriptPrompt')?.remove();
+    addBot("No problem at all. You can always reach us at contact@simplitconsulting.com if you'd like to continue the conversation.");
+  }
+
   // ── EVENT LISTENERS ─────────────────────────────────────────
   document.getElementById('ariaBubble').addEventListener('click', toggle);
   document.getElementById('ariaCloseBtn').addEventListener('click', toggle);
   document.getElementById('ariaClearBtn').addEventListener('click', clearChat);
+  document.getElementById('ariaTranscriptBtn').addEventListener('click', () => {
+    if (messageCount < 1) {
+      addBot("We haven't chatted yet! Ask me anything and then I can send you a transcript.");
+    } else {
+      showTranscriptPrompt();
+    }
+  });
   document.getElementById('ariaSendBtn').addEventListener('click', () => send());
 
   document.getElementById('ariaInput').addEventListener('keydown', e => {
