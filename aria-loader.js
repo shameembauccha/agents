@@ -80,7 +80,7 @@
 
     .aria-panel {
       position: absolute; bottom: 72px; right: 0;
-      width: 380px; height: 560px;
+      width: 420px; height: 620px;
       background: white; border-radius: 16px;
       box-shadow: 0 16px 56px rgba(15,15,15,0.18), 0 4px 16px rgba(15,15,15,0.08);
       display: flex; flex-direction: column; overflow: hidden;
@@ -213,6 +213,14 @@
     }
     .aria-qr:hover { background: #1a3a5c; color: white; border-color: #1a3a5c; }
 
+    .aria-qr-block { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+    .aria-qr-group { display: flex; flex-direction: column; gap: 6px; }
+    .aria-qr-label {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.07em;
+      text-transform: uppercase; color: #b0a898;
+      font-family: 'DM Mono', monospace;
+    }
+
     .aria-lead-card {
       background: linear-gradient(135deg, #1a3a5c, #2d5f8a);
       border-radius: 12px; padding: 14px 16px; margin-top: 4px; color: white;
@@ -272,6 +280,27 @@
     .aria-send-btn:disabled { background: #d8d3c8; cursor: not-allowed; transform: none; }
     .aria-send-btn svg { width: 16px; height: 16px; fill: white; }
 
+    .aria-icon-action {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: #f0ede4; border: 1.5px solid #d8d3c8;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: all 0.15s;
+      padding: 0;
+    }
+    .aria-icon-action:hover { background: #e8e3d8; border-color: #1a3a5c; }
+    .aria-icon-action svg { width: 16px; height: 16px; fill: #6b6457; }
+    .aria-icon-action.recording {
+      background: #fee2e2; border-color: #ef4444;
+      animation: ariaPulse 1s ease-in-out infinite;
+    }
+    .aria-icon-action.recording svg { fill: #ef4444; }
+    @keyframes ariaPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.3); }
+      50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+    }
+    .aria-icon-action.has-file { background: #e8f5e9; border-color: #4ade80; }
+    .aria-icon-action.has-file svg { fill: #16a34a; }
+
     .aria-footer-tag {
       padding: 6px 14px 8px; text-align: center;
       font-size: 0.62rem; color: #b0a898;
@@ -304,10 +333,21 @@
       </div>
       <div class="aria-messages" id="ariaMessages"></div>
       <div class="aria-input-row">
+        <button class="aria-icon-action" id="ariaMicBtn" aria-label="Voice input" title="Voice input">
+          <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+        </button>
+        <label class="aria-icon-action" id="ariaUploadBtn" aria-label="Upload document" title="Upload document (PDF or image)">
+          <input type="file" id="ariaFileInput" accept=".pdf,image/*" style="display:none" />
+          <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+        </label>
         <textarea class="aria-input" id="ariaInput" placeholder="Ask me anything about Oracle…" rows="1"></textarea>
         <button class="aria-send-btn" id="ariaSendBtn" aria-label="Send">
           <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
+      </div>
+      <div id="ariaFilePreview" style="display:none; padding: 0 14px 8px; font-size:0.75rem; color:#1a3a5c; font-family:'DM Sans',sans-serif;">
+        <span id="ariaFileName"></span>
+        <button onclick="clearAriaFile()" style="background:none;border:none;color:#c8973a;cursor:pointer;margin-left:6px;font-size:0.75rem;">✕ remove</button>
       </div>
       <div class="aria-footer-tag">Simpl'IT Consulting · Oracle, Simplified.</div>
     </div>
@@ -431,6 +471,15 @@ INVESTMENT RANGES (USD, indicative):
 - Training: $5K-$250K
 - Advisory: $8K-$250K
 
+AI & ORACLE — KEY TALKING POINTS:
+- Oracle has deeply embedded AI across Fusion Cloud: AI agents, generative summaries, smart recommendations
+- Key AI features: Oracle Digital Assistant, Fusion Data Intelligence, AI-powered anomaly detection in Finance
+- Oracle AI agents can automate AP invoice processing, expense approvals, HR onboarding workflows
+- Simpl'IT helps clients activate and configure Oracle's native AI features — no third-party tools needed
+- AI readiness starts with clean data and well-configured processes — something Simpl'IT specialises in
+- Honest view: AI in Oracle is powerful but requires a solid implementation foundation to deliver value
+- When asked about AI, always relate it back to the client's Oracle maturity and specific modules
+
 YOUR PERSONA AND BEHAVIOUR:
 - You are warm, confident, and expert — like a trusted senior Oracle consultant
 - You speak plainly — no jargon unless the person is clearly technical
@@ -443,11 +492,18 @@ YOUR PERSONA AND BEHAVIOUR:
 - Never make up specific project references
 - If asked something outside your knowledge, say so and offer to connect them with the team`;
 
-  const QUICK_REPLIES_INITIAL = [
+  const QUICK_REPLIES_DISCOVER = [
     "Let us help you find your way →",
     "Who is Simpl\'IT?",
     "What does Simpl\'IT do?",
     "What makes Simpl\'IT different?"
+  ];
+
+  const QUICK_REPLIES_COMMON = [
+    "Can you help with EBS to Cloud migration?",
+    "Our go-live went wrong — can you help?",
+    "How much does an implementation cost?",
+    "How is AI changing Oracle?"
   ];
 
   // ── TOGGLE ──────────────────────────────────────────────────
@@ -465,7 +521,7 @@ YOUR PERSONA AND BEHAVIOUR:
   function showWelcome() {
     addBot(
       `Hi, I'm **Aria** — Simpl'IT's Oracle specialist.\n\nWe're here to help you find your way through Oracle — whether you're exploring options, mid-project, or looking to get more from an existing implementation.\n\nNot sure where to start? Our guided journey can help: https://simplitconsulting.com/journey`,
-      QUICK_REPLIES_INITIAL
+      QUICK_REPLIES_DISCOVER, QUICK_REPLIES_COMMON
     );
   }
 
@@ -488,6 +544,16 @@ YOUR PERSONA AND BEHAVIOUR:
         { role: 'model', parts: [{ text: 'Understood. I am Aria, ready to help.' }] },
         ...history
       ];
+
+      // Attach file to last user message if present
+      if (pendingFile) {
+        const lastMsg = contents[contents.length - 1];
+        lastMsg.parts = [
+          { inline_data: { mime_type: pendingFile.mimeType, data: pendingFile.base64 } },
+          { text }
+        ];
+        clearAriaFile();
+      }
 
       const res  = await fetch(PROXY_URL, {
           method: 'POST',
@@ -513,7 +579,7 @@ YOUR PERSONA AND BEHAVIOUR:
   }
 
   // ── RENDER ──────────────────────────────────────────────────
-  function addBot(text, qr) {
+  function addBot(text, qr, qr2) {
     const msgs = document.getElementById('ariaMessages');
     const msg  = document.createElement('div');
     msg.className = 'aria-msg aria-bot';
@@ -532,16 +598,32 @@ YOUR PERSONA AND BEHAVIOUR:
     right.appendChild(bubble);
 
     if (qr?.length) {
-      const qrWrap = document.createElement('div');
-      qrWrap.className = 'aria-quick-replies';
-      qr.forEach(q => {
-        const btn = document.createElement('button');
-        btn.className = 'aria-qr';
-        btn.textContent = q;
-        btn.onclick = () => { qrWrap.remove(); send(q); };
-        qrWrap.appendChild(btn);
-      });
-      right.appendChild(qrWrap);
+      const qrBlock = document.createElement('div');
+      qrBlock.className = 'aria-qr-block';
+
+      function renderGroup(label, items) {
+        const group = document.createElement('div');
+        group.className = 'aria-qr-group';
+        const lbl = document.createElement('div');
+        lbl.className = 'aria-qr-label';
+        lbl.textContent = label;
+        group.appendChild(lbl);
+        const wrap = document.createElement('div');
+        wrap.className = 'aria-quick-replies';
+        items.forEach(q => {
+          const btn = document.createElement('button');
+          btn.className = 'aria-qr';
+          btn.textContent = q;
+          btn.onclick = () => { qrBlock.remove(); send(q); };
+          wrap.appendChild(btn);
+        });
+        group.appendChild(wrap);
+        qrBlock.appendChild(group);
+      }
+
+      renderGroup('Discover us', qr);
+      if (qr2?.length) renderGroup('Common questions', qr2);
+      right.appendChild(qrBlock);
     }
 
     msg.appendChild(av);
@@ -695,6 +777,81 @@ YOUR PERSONA AND BEHAVIOUR:
     const m = document.getElementById('ariaMessages');
     setTimeout(() => m.scrollTop = m.scrollHeight, 50);
   }
+
+  // ── VOICE INPUT ─────────────────────────────────────────────
+  let recognition = null;
+  const micBtn = document.getElementById('ariaMicBtn');
+
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SR();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => micBtn.classList.add('recording');
+    recognition.onend   = () => micBtn.classList.remove('recording');
+
+    recognition.onresult = (e) => {
+      const transcript = Array.from(e.results)
+        .map(r => r[0].transcript).join('');
+      const input = document.getElementById('ariaInput');
+      input.value = transcript;
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+      if (e.results[e.results.length - 1].isFinal) {
+        setTimeout(() => send(), 300);
+      }
+    };
+
+    recognition.onerror = (e) => {
+      micBtn.classList.remove('recording');
+      if (e.error !== 'no-speech') console.warn('Speech error:', e.error);
+    };
+
+    micBtn.addEventListener('click', () => {
+      if (micBtn.classList.contains('recording')) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    });
+  } else {
+    micBtn.title = 'Voice input not supported in this browser';
+    micBtn.style.opacity = '0.4';
+    micBtn.style.cursor = 'not-allowed';
+  }
+
+  // ── FILE UPLOAD ──────────────────────────────────────────────
+  let pendingFile = null; // { base64, mimeType, name }
+
+  function clearAriaFile() {
+    pendingFile = null;
+    document.getElementById('ariaFileInput').value = '';
+    document.getElementById('ariaFilePreview').style.display = 'none';
+    document.getElementById('ariaUploadBtn').classList.remove('has-file');
+  }
+
+  document.getElementById('ariaFileInput').addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    const maxMB = 10;
+    if (file.size > maxMB * 1024 * 1024) {
+      alert('File too large — please upload a file under 10MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target.result.split(',')[1];
+      pendingFile = { base64, mimeType: file.type, name: file.name };
+      document.getElementById('ariaFileName').textContent = '📎 ' + file.name;
+      document.getElementById('ariaFilePreview').style.display = 'block';
+      document.getElementById('ariaUploadBtn').classList.add('has-file');
+    };
+    reader.readAsDataURL(file);
+  });
 
   // ── EVENT LISTENERS ─────────────────────────────────────────
   document.getElementById('ariaBubble').addEventListener('click', toggle);
