@@ -247,7 +247,6 @@
     })
     .then(function(res) { return res.json(); })
     .then(function(data) {
-      console.log('Aria proxy response:', JSON.stringify(data).substring(0, 500));
       var reply = (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text)
         || 'I\'m having a moment - please try again or reach out at contact@simplitconsulting.com.';
       addBot(reply);
@@ -585,13 +584,13 @@
       addSection('Discover us', QR_DISCOVER);
       addSection('Common questions', QR_COMMON);
   
-      // Position menu above the ? button
+      // Position menu below the ? button
       var btn = document.getElementById('ariaQrBtn');
       var rect = btn.getBoundingClientRect();
-      menu.style.right = (window.innerWidth - rect.right) + 'px';
-      menu.style.top   = (rect.top - 8) + 'px';
-      menu.style.transform = 'translateY(-100%)';
-      menu.style.display = 'block';
+      menu.style.right     = (window.innerWidth - rect.right) + 'px';
+      menu.style.top       = (rect.bottom + 6) + 'px';
+      menu.style.transform = 'none';
+      menu.style.display   = 'block';
     });
   
     // Transcript button
