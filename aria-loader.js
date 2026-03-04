@@ -150,6 +150,7 @@
   var nudgeShown    = false;
   var leadCaptured  = false;
   var emailSent     = false;
+  var emailSending  = false;
   var transcriptShown = false;
   var visitorName   = '';
   var visitorEmail  = '';
@@ -410,7 +411,8 @@
 
   // ── EMAIL ───────────────────────────────────────────────────
   function sendEmail(toEmail, toName, toCompany) {
-    if (emailSent) return;
+    if (emailSent || emailSending) return;
+    emailSending = true;
     emailSent = true;
 
     var conv = '';
@@ -443,7 +445,10 @@
   function dispatchEmails(tid, ts, toEmail, nm, co, summary) {
     if (typeof emailjs === 'undefined') return;
     var note = 'Visitor: ' + toEmail + (co ? ' | ' + co : '');
-    var base = {
+    // Single email: FROM contact@simplitconsulting.com
+    //               TO visitor email
+    //               CC shameembauccha@simplitconsulting.com
+    emailjs.send(EMAILJS_SVC, EMAILJS_TPL, {
       lead_id:      tid,
       lead_name:    nm,
       lead_company: co,
@@ -451,23 +456,12 @@
       lead_notes:   note,
       profile_text: summary,
       lead_json:    JSON.stringify({ id: tid, visitor: toEmail, ts: ts }),
-      timestamp:    ts
-    };
-    // 1. To visitor - from Simpl'IT
-    emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, base, {
-      lead_title: 'Your Oracle Consultation Summary - Simpl\'IT',
-      lead_email: toEmail
-    }));
-    // 2. contact@simplitconsulting.com
-    emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, base, {
-      lead_title: 'Aria Lead - ' + toEmail,
-      lead_email: 'contact@simplitconsulting.com'
-    }));
-    // 3. shameembauccha@simplitconsulting.com
-    emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, base, {
-      lead_title: 'Aria Lead - ' + toEmail,
-      lead_email: 'shameembauccha@simplitconsulting.com'
-    }));
+      timestamp:    ts,
+      lead_title:   'Oracle Consultation Summary - Simpl\'IT',
+      lead_email:   toEmail,
+      reply_to:     'contact@simplitconsulting.com',
+      cc_email:     'shameembauccha@simplitconsulting.com'
+    });
   }
 
   // ── TRANSCRIPT PROMPT ────────────────────────────────────────
@@ -519,7 +513,7 @@
   // ── CLEAR ───────────────────────────────────────────────────
   function clearChat() {
     history = []; messageCount = 0; nudgeShown = false; leadCaptured = false;
-    emailSent = false; transcriptShown = false; visitorName = ''; visitorEmail = ''; visitorCompany = '';
+    emailSent = false; emailSending = false; transcriptShown = false; visitorName = ''; visitorEmail = ''; visitorCompany = '';
     clearTimeout(inactivityTimer);
     document.getElementById('ariaMessages').innerHTML = '';
     showWelcome();
