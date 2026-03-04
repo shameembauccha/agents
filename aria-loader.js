@@ -365,7 +365,7 @@
     var tick = document.createElement('div');
     tick.className = 'aria-msg-tick';
     tick.id = 'ariaTick_' + Date.now();
-    tick.textContent = '✓✓';
+    tick.innerHTML = '&#10003;&#10003;';
 
     var utime = document.createElement('div');
     utime.className = 'aria-msg-time';
