@@ -71,14 +71,12 @@
     '.aria-bubble-msg { max-width: 78%; padding: 10px 13px; border-radius: 14px; font-size: 0.84rem; line-height: 1.55; color: #0f0f0f; }',
     '.aria-msg.aria-bot .aria-bubble-msg { background: #f0ede4; border-bottom-left-radius: 4px; }',
     '.aria-msg.aria-user .aria-bubble-msg { background: #1a3a5c; color: white; border-bottom-right-radius: 4px; }',
-
     '.aria-bubble-msg p { margin: 0 0 6px; } .aria-bubble-msg p:last-child { margin-bottom: 0; }',
     '.aria-bubble-msg strong { color: #1a3a5c; font-weight: 600; }',
     '.aria-msg.aria-user .aria-bubble-msg strong { color: #e8b85a; }',
     '.aria-bubble-msg ul { padding-left: 16px; margin: 6px 0; } .aria-bubble-msg li { margin-bottom: 3px; }',
     '.aria-bubble-msg a { color: #c8973a; text-decoration: underline; }',
     '.aria-bubble-msg a:hover { color: #1a3a5c; }',
-
 
     '.aria-typing { display: flex; gap: 4px; align-items: center; padding: 12px 14px; }',
     '.aria-typing span { width: 6px; height: 6px; border-radius: 50%; background: #6b6457; animation: ariaTyping 1.2s ease-in-out infinite; }',
@@ -140,7 +138,17 @@
     + '</div>'
     + '</div>'
     + '<div class="aria-messages" id="ariaMessages"></div>'
-    + '<div id="ariaAttachPreview" style="display:none;" class="aria-attach-preview"><span id="ariaAttachName"></span><button id="ariaAttachRemove">&#10005;</button></div>'    + '<div class="aria-input-row">'    + '<button class="aria-icon-btn" id="ariaMicBtn" title="Voice input"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg></button>'    + '<input type="file" id="ariaFileInput" accept="image/*,.pdf" style="display:none;" />'    + '<button class="aria-icon-btn" id="ariaAttachBtn" title="Attach file"><svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>'    + '<textarea class="aria-input" id="ariaInput" placeholder="Ask me anything about Oracle..." rows="1"></textarea>'    + '<button class="aria-send-btn" id="ariaSendBtn"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>'    + '</div>'
+    + '<div id="ariaAttachPreview" style="display:none;" class="aria-attach-preview">'
+    + '<span id="ariaAttachName"></span>'
+    + '<button id="ariaAttachRemove">&#10005;</button>'
+    + '</div>'
+    + '<div class="aria-input-row">'
+    + '<button class="aria-icon-btn" id="ariaMicBtn" title="Voice input"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg></button>'
+    + '<input type="file" id="ariaFileInput" accept="image/*,.pdf" style="display:none;" />'
+    + '<button class="aria-icon-btn" id="ariaAttachBtn" title="Attach file"><svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>'
+    + '<textarea class="aria-input" id="ariaInput" placeholder="Ask me anything about Oracle..." rows="1"></textarea>'
+    + '<button class="aria-send-btn" id="ariaSendBtn"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>'
+    + '</div>'
     + '<div class="aria-footer-tag">Simpl\'IT Consulting &middot; Oracle, Simplified.</div>'
     + '</div>'
     + '<div class="aria-qr-menu" id="ariaQrMenu"></div>';
@@ -153,20 +161,20 @@
   document.head.appendChild(ejs);
 
   // -- STATE ---------------------------------------------------
-  var isOpen        = false;
-  var isTyping      = false;
-  var messageCount  = 0;
-  var nudgeShown    = false;
-  var leadCaptured  = false;
-  var emailSent     = false;
-  var emailSending  = false;
+  var isOpen          = false;
+  var isTyping        = false;
+  var messageCount    = 0;
+  var nudgeShown      = false;
+  var leadCaptured    = false;
+  var emailSent       = false;
+  var emailSending    = false;
   var transcriptShown = false;
-  var visitorName   = '';
-  var visitorEmail  = '';
-  var visitorCompany = '';
+  var visitorName     = '';
+  var visitorEmail    = '';
+  var visitorCompany  = '';
   var inactivityTimer = null;
-  var history       = [];
-  var attachedFile  = null;  // { data: base64, mimeType, name }
+  var history         = [];
+  var attachedFile    = null;
 
   var SYSTEM_PROMPT = 'You are Aria, Simpl\'IT Consulting\'s Oracle specialist assistant.\n\n'
     + 'ABOUT SIMPL\'IT:\n'
@@ -246,14 +254,16 @@
     setTyping(true);
     history.push({ role: 'user', parts: [{ text: text }] });
 
-    // Build last user message - add attachment if present
-    var lastMsg = history[history.length - 1];
+    var slowTimer = setTimeout(function() {
+      var t = document.getElementById('ariaTypingMsg');
+      if (t) t.querySelector('.aria-bubble-msg').innerHTML = '<div class="aria-typing"><span></span><span></span><span></span></div><div style="font-size:0.75rem;color:#b0a898;margin-top:6px;">Still working on this one...</div>';
+    }, 15000);
+
     if (attachedFile) {
-      lastMsg = { role: 'user', parts: [
+      history[history.length - 1] = { role: 'user', parts: [
         { inline_data: { mime_type: attachedFile.mimeType, data: attachedFile.data } },
         { text: text }
       ]};
-      history[history.length - 1] = lastMsg;
       attachedFile = null;
       var prev = document.getElementById('ariaAttachPreview');
       if (prev) prev.style.display = 'none';
@@ -279,10 +289,12 @@
         nudgeShown = true;
         setTimeout(showNudge, 800);
       }
+      clearTimeout(slowTimer);
       setTyping(false);
       resetInactivity();
     })
     .catch(function() {
+      clearTimeout(slowTimer);
       addBot('I\'m having a moment - please try again or reach out at contact@simplitconsulting.com.');
       setTyping(false);
     });
@@ -293,25 +305,20 @@
     var msgs = document.getElementById('ariaMessages');
     var msg  = document.createElement('div');
     msg.className = 'aria-msg aria-bot';
-
     var av = document.createElement('div');
     av.className = 'aria-msg-av aria-av-aria';
     av.textContent = 'A';
-
     var right = document.createElement('div');
     right.style.cssText = 'display:flex;flex-direction:column;gap:8px;max-width:85%;';
-
     var bubble = document.createElement('div');
     bubble.className = 'aria-bubble-msg';
     bubble.innerHTML = fmt(text);
     right.appendChild(bubble);
-
     if (qr && qr.length) {
       var qrBlock = document.createElement('div');
       qrBlock.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin-top:4px;';
-
       function makeGroup(label, items) {
-        var g   = document.createElement('div');
+        var g = document.createElement('div');
         var lbl = document.createElement('div');
         lbl.style.cssText = 'font-size:0.65rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:#b0a898;margin-bottom:4px;';
         lbl.textContent = label;
@@ -330,12 +337,10 @@
         g.appendChild(wrap);
         qrBlock.appendChild(g);
       }
-
       makeGroup('Discover us', qr);
       if (qr2 && qr2.length) makeGroup('Common questions', qr2);
       right.appendChild(qrBlock);
     }
-
     msg.appendChild(av);
     msg.appendChild(right);
     msgs.appendChild(msg);
@@ -436,19 +441,15 @@
   function sendEmail(toEmail, toName, toCompany) {
     if (emailSent || emailSending) return;
     emailSending = true;
-    emailSent = true;
-
+    emailSent    = true;
     var conv = '';
     for (var i = 0; i < history.length; i++) {
       conv += (history[i].role === 'user' ? 'Visitor' : 'Aria') + ': ' + history[i].parts[0].text + '\n\n';
     }
-
     var ts  = new Date().toISOString();
     var tid = 'ARIA_' + Date.now();
     var nm  = toName    || 'Visitor';
     var co  = toCompany || '';
-
-    // Ask Gemini for structured summary then send emails
     fetch(PROXY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -468,9 +469,6 @@
   function dispatchEmails(tid, ts, toEmail, nm, co, summary) {
     if (typeof emailjs === 'undefined') return;
     var note = 'Visitor: ' + toEmail + (co ? ' | ' + co : '');
-    // Single email: FROM contact@simplitconsulting.com
-    //               TO visitor email
-    //               CC shameembauccha@simplitconsulting.com
     emailjs.send(EMAILJS_SVC, EMAILJS_TPL, {
       lead_id:      tid,
       lead_name:    nm,
@@ -487,7 +485,7 @@
     });
   }
 
-  // -- TRANSCRIPT PROMPT ----------------------------------------
+  // -- TRANSCRIPT ----------------------------------------------
   function showTranscriptPrompt() {
     if (transcriptShown || emailSent) return;
     transcriptShown = true;
@@ -536,7 +534,8 @@
   // -- CLEAR ---------------------------------------------------
   function clearChat() {
     history = []; messageCount = 0; nudgeShown = false; leadCaptured = false;
-    emailSent = false; emailSending = false; transcriptShown = false; visitorName = ''; visitorEmail = ''; visitorCompany = '';
+    emailSent = false; emailSending = false; transcriptShown = false;
+    visitorName = ''; visitorEmail = ''; visitorCompany = '';
     clearTimeout(inactivityTimer);
     document.getElementById('ariaMessages').innerHTML = '';
     showWelcome();
@@ -558,13 +557,14 @@
     setTimeout(function() { m.scrollTop = m.scrollHeight; }, 50);
   }
 
-  // -- EVENTS --
+  // -- EVENTS --------------------------------------------------
   setTimeout(function() {
+
     document.getElementById('ariaBubble').addEventListener('click', toggle);
     document.getElementById('ariaCloseBtn').addEventListener('click', toggle);
     document.getElementById('ariaClearBtn').addEventListener('click', clearChat);
     document.getElementById('ariaSendBtn').addEventListener('click', function() { send(); });
-  
+
     document.getElementById('ariaInput').addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
     });
@@ -572,14 +572,12 @@
       this.style.height = 'auto';
       this.style.height = Math.min(this.scrollHeight, 100) + 'px';
     });
-  
-    // - button - question menu
+
     document.getElementById('ariaQrBtn').addEventListener('click', function(e) {
       e.stopPropagation();
       var menu = document.getElementById('ariaQrMenu');
       if (menu.style.display === 'block') { menu.style.display = 'none'; return; }
       menu.innerHTML = '';
-  
       function addSection(label, items) {
         var lbl = document.createElement('div');
         lbl.style.cssText = 'font-size:0.62rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#b0a898;padding:6px 14px 3px;';
@@ -597,11 +595,8 @@
           })(items[i]);
         }
       }
-  
       addSection('Discover us', QR_DISCOVER);
       addSection('Common questions', QR_COMMON);
-  
-      // Position menu below the - button
       var btn = document.getElementById('ariaQrBtn');
       var rect = btn.getBoundingClientRect();
       menu.style.right     = (window.innerWidth - rect.right) + 'px';
@@ -609,8 +604,7 @@
       menu.style.transform = 'none';
       menu.style.display   = 'block';
     });
-  
-    // Transcript button
+
     document.getElementById('ariaTranscriptBtn').addEventListener('click', function() {
       if (messageCount < 1) {
         addBot('We haven\'t chatted yet - ask me anything first!');
@@ -620,13 +614,13 @@
         showTranscriptPrompt();
       }
     });
-  
+
     document.addEventListener('click', function() {
       var m = document.getElementById('ariaQrMenu');
       if (m) m.style.display = 'none';
     });
 
-    // -- MIC / SPEECH -------------------------------------------
+    // -- MIC ---------------------------------------------------
     var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     var micBtn = document.getElementById('ariaMicBtn');
     if (SR) {
@@ -635,7 +629,6 @@
       recognition.continuous = false;
       recognition.interimResults = false;
       var isRecording = false;
-
       micBtn.addEventListener('click', function() {
         if (isRecording) {
           recognition.stop();
@@ -646,7 +639,6 @@
           micBtn.title = 'Listening... click to stop';
         }
       });
-
       recognition.onresult = function(e) {
         var transcript = e.results[0][0].transcript;
         document.getElementById('ariaInput').value = transcript;
@@ -655,7 +647,6 @@
         micBtn.title = 'Voice input';
         send(transcript);
       };
-
       recognition.onerror = recognition.onend = function() {
         isRecording = false;
         micBtn.classList.remove('recording');
@@ -667,15 +658,13 @@
       micBtn.style.cursor = 'not-allowed';
     }
 
-    // -- FILE ATTACHMENT -----------------------------------------
+    // -- ATTACHMENT --------------------------------------------
     var attachBtn  = document.getElementById('ariaAttachBtn');
     var fileInput  = document.getElementById('ariaFileInput');
     var attachPrev = document.getElementById('ariaAttachPreview');
     var attachName = document.getElementById('ariaAttachName');
     var attachRem  = document.getElementById('ariaAttachRemove');
-
     attachBtn.addEventListener('click', function() { fileInput.click(); });
-
     fileInput.addEventListener('change', function() {
       var file = fileInput.files[0];
       if (!file) return;
@@ -690,7 +679,6 @@
       reader.readAsDataURL(file);
       fileInput.value = '';
     });
-
     attachRem.addEventListener('click', function() {
       attachedFile = null;
       attachPrev.style.display = 'none';
@@ -703,4 +691,5 @@
     }, 8000);
 
   }, 0);
+
 })();
