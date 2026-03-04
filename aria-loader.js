@@ -9,6 +9,15 @@
 (function () {
   'use strict';
 
+  // Wait for DOM if needed
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  function init() {
+
   // ── CONFIG ──────────────────────────────────────────────────
   const PROXY_URL       = 'https://simplitconsulting.com/wp-json/simplit/v1/aria';
   const EMAILJS_SERVICE   = 'service_rs59uuo';
@@ -95,112 +104,52 @@
       transform: scale(1) translateY(0);
       opacity: 1; pointer-events: all;
     }
-    @media (max-width: 480px) {
+    @media (max-width: 520px) {
       .aria-panel {
         width: calc(100vw - 16px);
-        height: calc(100dvh - 90px);
         right: 8px;
-        bottom: 76px;
+        bottom: 80px;
+        height: calc(100vh - 100px);
       }
     }
 
     .aria-header {
       background: linear-gradient(135deg, #1a3a5c 0%, #2d5f8a 100%);
-      padding: 12px 14px;
-      display: flex; align-items: center; gap: 10px;
+      padding: 16px 18px;
+      display: flex; align-items: center; gap: 12px;
       flex-shrink: 0;
     }
     .aria-avatar {
-      width: 36px; height: 36px; border-radius: 50%;
+      width: 40px; height: 40px; border-radius: 50%;
       background: rgba(200,151,58,0.2);
       border: 2px solid rgba(200,151,58,0.4);
       display: flex; align-items: center; justify-content: center;
       font-family: 'Playfair Display', serif;
-      font-size: 0.9rem; font-weight: 700; color: #e8b85a; flex-shrink: 0;
+      font-size: 1rem; font-weight: 700; color: #e8b85a; flex-shrink: 0;
     }
-    .aria-header-info { flex: 1; min-width: 0; }
+    .aria-header-info { flex: 1; }
     .aria-agent-name {
       font-family: 'Playfair Display', serif;
-      font-size: 0.9rem; font-weight: 600; color: white; line-height: 1.2;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 0.95rem; font-weight: 600; color: white; line-height: 1.2;
     }
     .aria-agent-status {
-      font-size: 0.65rem; color: rgba(255,255,255,0.6);
-      display: flex; align-items: center; gap: 4px; margin-top: 2px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 0.7rem; color: rgba(255,255,255,0.6);
+      display: flex; align-items: center; gap: 5px; margin-top: 2px;
     }
     .aria-agent-status::before {
-      content: ''; width: 5px; height: 5px;
+      content: ''; width: 6px; height: 6px;
       border-radius: 50%; background: #4ade80; flex-shrink: 0;
     }
-    .aria-header-btns { display: flex; gap: 5px; flex-shrink: 0; }
+    .aria-header-btns { display: flex; gap: 5px; flex-shrink: 0; position: relative; }
     .aria-hdr-btn {
       background: rgba(255,255,255,0.1); border: none;
       border-radius: 6px; width: 28px; height: 28px;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; color: rgba(255,255,255,0.7); font-size: 0.8rem;
+      cursor: pointer; color: rgba(255,255,255,0.8); font-size: 0.82rem;
       transition: background 0.15s; font-family: 'DM Sans', sans-serif;
       flex-shrink: 0;
     }
     .aria-hdr-btn:hover { background: rgba(255,255,255,0.2); color: white; }
-
-    .aria-qr-dropdown-wrap { position: relative; }
-    .aria-qr-dropdown {
-      display: none; position: absolute; bottom: 38px; right: 0;
-      background: white; border-radius: 10px; min-width: 250px;
-      box-shadow: 0 8px 32px rgba(15,15,15,0.15); padding: 8px 0;
-      z-index: 99999; max-height: 340px; overflow-y: auto;
-    }
-    .aria-qr-dropdown.open { display: block; }
-    .aria-qr-drop-label {
-      font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em;
-      text-transform: uppercase; color: #b0a898;
-      font-family: 'DM Mono', monospace;
-      padding: 6px 14px 4px;
-    }
-    .aria-qr-drop-item {
-      display: block; width: 100%; text-align: left;
-      background: none; border: none; padding: 7px 14px;
-      font-size: 0.8rem; color: #1a3a5c; cursor: pointer;
-      font-family: 'DM Sans', sans-serif; line-height: 1.4;
-      transition: background 0.12s;
-    }
-    .aria-qr-drop-item:hover { background: #f0ede4; }
-
-    .aria-transcript-card {
-      background: linear-gradient(135deg, #1a3a5c, #2d5f8a);
-      border-radius: 12px; padding: 14px 16px; margin-top: 4px; color: white;
-    }
-    .aria-transcript-card h4 {
-      font-family: 'Playfair Display', serif;
-      font-size: 0.9rem; margin: 0 0 6px; font-weight: 600;
-    }
-    .aria-transcript-card p {
-      font-size: 0.76rem; opacity: 0.75; margin: 0 0 10px; line-height: 1.5;
-    }
-    .aria-transcript-card input {
-      width: 100%; padding: 8px 10px; border-radius: 6px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(255,255,255,0.1); color: white;
-      font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
-      margin-bottom: 8px; outline: none;
-    }
-    .aria-transcript-card input::placeholder { color: rgba(255,255,255,0.4); }
-    .aria-transcript-card input:focus { border-color: #e8b85a; }
-    .aria-transcript-btns { display: flex; gap: 8px; margin-top: 4px; }
-    .aria-transcript-submit {
-      flex: 1; background: #c8973a; color: white; border: none;
-      border-radius: 6px; padding: 8px;
-      font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
-      font-weight: 600; cursor: pointer; transition: background 0.15s;
-    }
-    .aria-transcript-submit:hover { background: #e8b85a; }
-    .aria-transcript-skip {
-      background: transparent; color: rgba(255,255,255,0.5);
-      border: 1px solid rgba(255,255,255,0.2); border-radius: 6px;
-      padding: 8px 12px; font-family: 'DM Sans', sans-serif;
-      font-size: 0.78rem; cursor: pointer;
-    }
 
     .aria-messages {
       flex: 1; overflow-y: auto;
@@ -278,14 +227,6 @@
     }
     .aria-qr:hover { background: #1a3a5c; color: white; border-color: #1a3a5c; }
 
-    .aria-qr-block { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
-    .aria-qr-group { display: flex; flex-direction: column; gap: 6px; }
-    .aria-qr-label {
-      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.07em;
-      text-transform: uppercase; color: #b0a898;
-      font-family: 'DM Mono', monospace;
-    }
-
     .aria-lead-card {
       background: linear-gradient(135deg, #1a3a5c, #2d5f8a);
       border-radius: 12px; padding: 14px 16px; margin-top: 4px; color: white;
@@ -332,10 +273,9 @@
       font-size: 0.84rem; outline: none; resize: none;
       max-height: 100px; line-height: 1.4; color: #1a1a1a;
       transition: border-color 0.15s; background: #f8f6f1;
-      -webkit-text-fill-color: #1a1a1a;
     }
-    .aria-input:focus { border-color: #1a3a5c; background: white; color: #1a1a1a; -webkit-text-fill-color: #1a1a1a; }
-    .aria-input::placeholder { color: #b0a898; -webkit-text-fill-color: #b0a898; }
+    .aria-input:focus { border-color: #1a3a5c; background: white; color: #1a1a1a; }
+    .aria-input::placeholder { color: #b0a898; }
     .aria-send-btn {
       width: 36px; height: 36px; border-radius: 50%;
       background: #1a3a5c; border: none; cursor: pointer;
@@ -345,27 +285,6 @@
     .aria-send-btn:hover { background: #2d5f8a; transform: scale(1.05); }
     .aria-send-btn:disabled { background: #d8d3c8; cursor: not-allowed; transform: none; }
     .aria-send-btn svg { width: 16px; height: 16px; fill: white; }
-
-    .aria-icon-action {
-      width: 32px; height: 32px; border-radius: 8px;
-      background: #f0ede4; border: 1.5px solid #d8d3c8;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; flex-shrink: 0; transition: all 0.15s;
-      padding: 0;
-    }
-    .aria-icon-action:hover { background: #e8e3d8; border-color: #1a3a5c; }
-    .aria-icon-action svg { width: 16px; height: 16px; fill: #6b6457; }
-    .aria-icon-action.recording {
-      background: #fee2e2; border-color: #ef4444;
-      animation: ariaPulse 1s ease-in-out infinite;
-    }
-    .aria-icon-action.recording svg { fill: #ef4444; }
-    @keyframes ariaPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.3); }
-      50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
-    }
-    .aria-icon-action.has-file { background: #e8f5e9; border-color: #4ade80; }
-    .aria-icon-action.has-file svg { fill: #16a34a; }
 
     .aria-footer-tag {
       padding: 6px 14px 8px; text-align: center;
@@ -393,43 +312,19 @@
           <div class="aria-agent-status">Simpl'IT Oracle Specialist · Online</div>
         </div>
         <div class="aria-header-btns">
-          <div class="aria-qr-dropdown-wrap" id="ariaQrWrap">
-            <button class="aria-hdr-btn" id="ariaQrToggle" title="Suggested questions">?</button>
-            <div class="aria-qr-dropdown" id="ariaQrDropdown">
-              <div class="aria-qr-drop-label">Discover us</div>
-              <button class="aria-qr-drop-item">Let us help you find your way →</button>
-              <button class="aria-qr-drop-item">Who is Simpl'IT?</button>
-              <button class="aria-qr-drop-item">What does Simpl'IT do?</button>
-              <button class="aria-qr-drop-item">What makes Simpl'IT different?</button>
-              <div class="aria-qr-drop-label" style="margin-top:8px;">Common questions</div>
-              <button class="aria-qr-drop-item">Can you help with EBS to Cloud migration?</button>
-              <button class="aria-qr-drop-item">Our go-live went wrong — can you help?</button>
-              <button class="aria-qr-drop-item">How much does an implementation cost?</button>
-              <button class="aria-qr-drop-item">How is AI changing Oracle?</button>
-            </div>
-          </div>
-          <button class="aria-hdr-btn" id="ariaTranscriptBtn" title="Email me this conversation">✉</button>
-          <button class="aria-hdr-btn" id="ariaClearBtn" title="Clear conversation">↺</button>
-          <button class="aria-hdr-btn" id="ariaCloseBtn" title="Close">✕</button>
+          <button class="aria-hdr-btn" id="ariaQrBtn" title="Suggested questions" style="font-weight:700;">?</button>
+          <button class="aria-hdr-btn" id="ariaTranscriptBtn" title="Email conversation">&#9993;</button>
+          <button class="aria-hdr-btn" id="ariaClearBtn" title="New conversation">&#8635;</button>
+          <button class="aria-hdr-btn" id="ariaCloseBtn" title="Close">&#10005;</button>
         </div>
+        <div id="ariaQrMenu" style="display:none;position:absolute;bottom:64px;right:14px;background:white;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.15);padding:8px 0;z-index:999999;min-width:260px;max-height:360px;overflow-y:auto;"></div>
       </div>
       <div class="aria-messages" id="ariaMessages"></div>
       <div class="aria-input-row">
-        <button class="aria-icon-action" id="ariaMicBtn" aria-label="Voice input" title="Voice input">
-          <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
-        </button>
-        <label class="aria-icon-action" id="ariaUploadBtn" aria-label="Upload document" title="Upload document (PDF or image)">
-          <input type="file" id="ariaFileInput" accept=".pdf,image/*" style="display:none" />
-          <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
-        </label>
         <textarea class="aria-input" id="ariaInput" placeholder="Ask me anything about Oracle…" rows="1"></textarea>
         <button class="aria-send-btn" id="ariaSendBtn" aria-label="Send">
           <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
-      </div>
-      <div id="ariaFilePreview" style="display:none; padding: 0 14px 8px; font-size:0.75rem; color:#1a3a5c; font-family:'DM Sans',sans-serif;">
-        <span id="ariaFileName"></span>
-        <button onclick="clearAriaFile()" style="background:none;border:none;color:#c8973a;cursor:pointer;margin-left:6px;font-size:0.75rem;">✕ remove</button>
       </div>
       <div class="aria-footer-tag">Simpl'IT Consulting · Oracle, Simplified.</div>
     </div>
@@ -451,49 +346,6 @@
   let history        = [];
 
   const SYSTEM_PROMPT = `You are Aria, Simpl'IT Consulting's Oracle specialist assistant, embedded on the Simpl'IT Consulting website.
-
-CONTENT PRIORITY — ALWAYS follow this order:
-1. Answer first from Simpl'IT's own services, expertise, and context in this prompt
-2. Reference and link to relevant pages on the Simpl'IT website naturally
-3. Only broaden to general Oracle industry knowledge if the question genuinely goes beyond Simpl'IT's scope
-4. Never recommend or mention competitors
-
-SITE PAGES — link to these naturally and proactively when relevant:
-- Services overview: https://simplitconsulting.com/services
-- About Simpl'IT: https://simplitconsulting.com/about
-- Client references (filterable by vertical, country, domain, project type): https://simplitconsulting.com/references
-- Start your journey: https://simplitconsulting.com/journey
-- Contact the team: https://simplitconsulting.com/contact
-
-JOURNEY PAGE — high priority conversion path:
-- Recommend the Journey page warmly after 1-2 exchanges for most visitors: https://simplitconsulting.com/journey
-- Use language like: "The best way forward is our guided journey — it only takes a few minutes and helps us point you in exactly the right direction: simplitconsulting.com/journey"
-- If a visitor clicks "Let us help you find your way →" as their first message, respond warmly and link directly to the Journey page immediately
-- SUPPRESS Journey recommendation when:
-  * The visitor is clearly an Oracle practitioner (asks about FBDI, SLA config, API specs, ADFdi, OIC, OTBI, specific module configuration)
-  * The visitor has an urgent problem (go-live failure, data issue, system down, production bug) — focus on helping them first
-  * The visitor has already been directed to the Journey page in this conversation
-- Never push aggressively — read the conversation and use good judgment
-
-IDENTITY & DIFFERENTIATORS — answer these confidently:
-When asked "Who is Simpl'IT?":
-- A specialist Oracle consulting firm born in Mauritius with global reach across Africa, Middle East, Europe, and Asia-Pacific
-- Founded by certified Oracle practitioners who have been in the client's shoes — they know what good looks like
-- Young and agile — clients work directly with senior experts, not layers of junior staff
-- Tagline: "Oracle, Simplified. Results, Delivered."
-
-When asked "What makes Simpl'IT different?":
-- Direct access to senior practitioners on every engagement — no bait-and-switch with junior teams
-- Deep specialisation in Oracle only — not a generalist firm trying to do everything
-- Agility of a boutique with the depth of a larger firm
-- Honest, no-oversell approach — they'll tell you what you need, not what sounds impressive
-- Global experience with local understanding — strong roots in Africa and the Indian Ocean region
-- Proven across the full Oracle lifecycle: strategy, implementation, migration, optimisation, training
-
-REFERENCES PAGE:
-- When a visitor mentions their industry, country, region, or Oracle module, proactively mention Simpl'IT's relevant experience and link to https://simplitconsulting.com/references
-- Example: "We've worked with organisations in similar situations — you can explore our references filtered by your industry or region at simplitconsulting.com/references"
-- References can be filtered by: Industry/Vertical, Country, Oracle Domain (Finance, HCM, SCM, Projects etc.), Project Type (Implementation, Migration, Health Check, Optimisation etc.)
 
 ABOUT SIMPL'IT CONSULTING:
 - Specialist Oracle consulting firm headquartered in Port Louis, Mauritius
@@ -556,15 +408,6 @@ INVESTMENT RANGES (USD, indicative):
 - Training: $5K-$250K
 - Advisory: $8K-$250K
 
-AI & ORACLE — KEY TALKING POINTS:
-- Oracle has deeply embedded AI across Fusion Cloud: AI agents, generative summaries, smart recommendations
-- Key AI features: Oracle Digital Assistant, Fusion Data Intelligence, AI-powered anomaly detection in Finance
-- Oracle AI agents can automate AP invoice processing, expense approvals, HR onboarding workflows
-- Simpl'IT helps clients activate and configure Oracle's native AI features — no third-party tools needed
-- AI readiness starts with clean data and well-configured processes — something Simpl'IT specialises in
-- Honest view: AI in Oracle is powerful but requires a solid implementation foundation to deliver value
-- When asked about AI, always relate it back to the client's Oracle maturity and specific modules
-
 YOUR PERSONA AND BEHAVIOUR:
 - You are warm, confident, and expert — like a trusted senior Oracle consultant
 - You speak plainly — no jargon unless the person is clearly technical
@@ -575,16 +418,37 @@ YOUR PERSONA AND BEHAVIOUR:
 - Keep responses focused and conversational — no walls of text
 - Use short paragraphs. Bullet points only when listing multiple items.
 - Never make up specific project references
-- If asked something outside your knowledge, say so and offer to connect them with the team`;
+- If asked something outside your knowledge, say so and offer to connect them with the team
 
-  const QUICK_REPLIES_DISCOVER = [
+CONTENT PRIORITY:
+1. Answer first from Simpl'IT knowledge above
+2. Link to site pages naturally: /services, /about, /references, /journey, /contact
+3. Only broaden to general Oracle knowledge if genuinely outside Simpl'IT scope
+4. Never mention competitors
+
+JOURNEY PAGE — guide visitors here after 2-3 exchanges (skip if visitor is clearly technical or has urgent issue):
+"The best way forward is our guided journey: https://simplitconsulting.com/journey"
+
+REFERENCES — mention when visitor states industry/country/domain:
+"We have relevant experience — explore at https://simplitconsulting.com/references (filter by vertical, country, domain, project type)"
+
+IDENTITY:
+Who is Simpl'IT: Specialist Oracle firm, Port Louis Mauritius, global reach Africa/Middle East/Europe/APAC, direct access to senior practitioners, no junior teams
+What makes us different: Oracle-only specialists, agile boutique depth, honest no-oversell approach, proven across full Oracle lifecycle
+
+AI & ORACLE:
+- Oracle AI embedded in Fusion Cloud: AI agents, generative summaries, anomaly detection in Finance
+- Key features: Oracle Digital Assistant, Fusion Data Intelligence, AI-powered AP/HR workflows
+- Simpl'IT helps activate native Oracle AI — no third-party tools needed
+- AI readiness requires clean data and solid implementation foundation`;
+
+  const QR_DISCOVER = [
     "Let us help you find your way →",
-    "Who is Simpl\'IT?",
-    "What does Simpl\'IT do?",
-    "What makes Simpl\'IT different?"
+    "Who is Simpl'IT?",
+    "What does Simpl'IT do?",
+    "What makes Simpl'IT different?"
   ];
-
-  const QUICK_REPLIES_COMMON = [
+  const QR_COMMON = [
     "Can you help with EBS to Cloud migration?",
     "Our go-live went wrong — can you help?",
     "How much does an implementation cost?",
@@ -599,18 +463,18 @@ YOUR PERSONA AND BEHAVIOUR:
     document.getElementById('ariaNotifDot').classList.add('aria-hidden');
     if (isOpen) {
       if (messageCount === 0) showWelcome();
-      setTimeout(() => {
+      setTimeout(function() {
         scrollDown();
         document.getElementById('ariaInput').focus();
-      }, 350);
+      }, 300);
     }
   }
 
   function showWelcome() {
-    setTimeout(scrollDown, 100);
     addBot(
-      `Hi, I'm **Aria** — Simpl'IT's Oracle specialist.\n\nWe're here to help you find your way through Oracle — whether you're exploring options, mid-project, or looking to get more from an existing implementation.\n\nNot sure where to start? Our guided journey can help: https://simplitconsulting.com/journey`,
-      QUICK_REPLIES_DISCOVER, QUICK_REPLIES_COMMON
+      `Hi, I'm **Aria** — Simpl'IT's Oracle specialist.\n\nWe're here to help you find your way through Oracle — whether you're exploring, mid-project, or looking to get more from an existing implementation.\n\nNot sure where to start? https://simplitconsulting.com/journey`,
+      QR_DISCOVER,
+      QR_COMMON
     );
   }
 
@@ -634,16 +498,6 @@ YOUR PERSONA AND BEHAVIOUR:
         ...history
       ];
 
-      // Attach file to last user message if present
-      if (pendingFile) {
-        const lastMsg = contents[contents.length - 1];
-        lastMsg.parts = [
-          { inline_data: { mime_type: pendingFile.mimeType, data: pendingFile.base64 } },
-          { text }
-        ];
-        clearAriaFile();
-      }
-
       const res  = await fetch(PROXY_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -665,7 +519,7 @@ YOUR PERSONA AND BEHAVIOUR:
     }
 
     setTyping(false);
-    resetInactivityTimer();
+    resetInactivity();
   }
 
   // ── RENDER ──────────────────────────────────────────────────
@@ -687,32 +541,31 @@ YOUR PERSONA AND BEHAVIOUR:
     bubble.innerHTML = fmt(text);
     right.appendChild(bubble);
 
-    if (qr?.length) {
-      const qrBlock = document.createElement('div');
-      qrBlock.className = 'aria-qr-block';
+    if (qr && qr.length) {
+      var qrBlock = document.createElement('div');
+      qrBlock.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin-top:8px;';
 
-      function renderGroup(label, items) {
-        const group = document.createElement('div');
-        group.className = 'aria-qr-group';
-        const lbl = document.createElement('div');
-        lbl.className = 'aria-qr-label';
+      function makeGroup(label, items) {
+        var g = document.createElement('div');
+        var lbl = document.createElement('div');
+        lbl.style.cssText = 'font-size:0.65rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:#b0a898;font-family:DM Mono,monospace;margin-bottom:4px;';
         lbl.textContent = label;
-        group.appendChild(lbl);
-        const wrap = document.createElement('div');
+        g.appendChild(lbl);
+        var wrap = document.createElement('div');
         wrap.className = 'aria-quick-replies';
-        items.forEach(q => {
-          const btn = document.createElement('button');
+        items.forEach(function(q) {
+          var btn = document.createElement('button');
           btn.className = 'aria-qr';
           btn.textContent = q;
-          btn.onclick = () => { qrBlock.remove(); send(q); };
+          btn.onclick = function() { qrBlock.remove(); send(q); };
           wrap.appendChild(btn);
         });
-        group.appendChild(wrap);
-        qrBlock.appendChild(group);
+        g.appendChild(wrap);
+        qrBlock.appendChild(g);
       }
 
-      renderGroup('Discover us', qr);
-      if (qr2?.length) renderGroup('Common questions', qr2);
+      makeGroup('Discover us', qr);
+      if (qr2 && qr2.length) makeGroup('Common questions', qr2);
       right.appendChild(qrBlock);
     }
 
@@ -819,26 +672,17 @@ YOUR PERSONA AND BEHAVIOUR:
       profile: { persona: 'unknown', industry: 'unknown', situation: 'chat_inquiry', painPoints: [], domains: [], currentSystem: 'unknown', companySize: 'unknown' }
     };
 
-    try {
-      if (typeof emailjs !== 'undefined') {
-        // Send lead notification to Simpl'IT only — visitor gets transcript separately if requested
-        await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
-          lead_id:      leadData.id,
-          lead_name:    name    || 'Not provided',
-          lead_company: company || 'Not provided',
-          lead_title:   'New Lead — Aria Chat Widget',
-          lead_email:   'contact@simplitconsulting.com',
-          lead_phone:   '',
-          lead_notes:   `Visitor contact: ${email}${company ? ' | ' + company : ''}`,
-          profile_text: `VISITOR DETAILS\nName: ${name || 'Not provided'}\nEmail: ${email}\nCompany: ${company || 'Not provided'}\n\nCONVERSATION SUMMARY\n\n${summary.substring(0, 3000)}`,
-          lead_json:    JSON.stringify(leadData, null, 2),
-          timestamp:    leadData.timestamp
-        });
-      }
-    } catch (e) { console.error('Aria lead error:', e); }
+    // Store lead info — email sent via transcript flow (one combined email)
+    visitorName    = name;
+    visitorEmail   = email;
+    visitorCompany = company;
 
-    document.getElementById('ariaLeadNudge')?.remove();
-    addBot(`Thank you${name ? ', ' + name.split(' ')[0] : ''}! Our team will be in touch within 24 hours. Feel free to keep asking me anything.`);
+    document.getElementById('ariaLeadNudge').remove();
+    var greeting = name ? ', ' + name.split(' ')[0] : '';
+    addBot('Thank you' + greeting + '! Our team will be in touch within 24 hours. Feel free to keep asking me anything.');
+
+    // Send one combined email now
+    sendEmail(email, name, company);
   }
 
   function dismissNudge() {
@@ -846,10 +690,128 @@ YOUR PERSONA AND BEHAVIOUR:
     addBot("No problem at all — I'm here whenever you need me. What else can I help you with?");
   }
 
+  // ── VISITOR STATE ───────────────────────────────────────────
+  var visitorName    = '';
+  var visitorEmail   = '';
+  var visitorCompany = '';
+  var emailSent      = false;
+
+  // ── SEND EMAIL (one call, three recipients) ─────────────────
+  async function sendEmail(toEmail, toName, toCompany) {
+    if (emailSent) return;
+    emailSent = true;
+
+    var conv = history
+      .map(function(m) { return (m.role === 'user' ? 'Visitor' : 'Aria') + ': ' + m.parts[0].text; })
+      .join('\n\n');
+
+    // Ask Gemini for structured summary
+    var summary = conv;
+    try {
+      var res = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{
+          role: 'user',
+          parts: [{ text: 'Summarise this Oracle consulting chat into a professional email with sections: 1. Visitor Profile 2. Key Topics 3. Pain Points 4. Services of Interest 5. Next Steps. Be concise. Address visitor directly.\n\nCHAT:\n' + conv.substring(0, 3000) }]
+        }]})
+      });
+      var data = await res.json();
+      summary = (data.candidates && data.candidates[0].content.parts[0].text) || conv;
+    } catch(e) { /* use raw conv */ }
+
+    var ts   = new Date().toISOString();
+    var tid  = 'ARIA_' + Date.now();
+    var nm   = toName    || 'Visitor';
+    var co   = toCompany || '';
+    var note = 'Visitor: ' + toEmail + (co ? ' | ' + co : '');
+
+    var base = {
+      lead_id:      tid,
+      lead_name:    nm,
+      lead_company: co,
+      lead_phone:   '+230 57984505',
+      lead_notes:   note,
+      profile_text: summary,
+      lead_json:    JSON.stringify({ id: tid, visitor: toEmail, ts: ts }),
+      timestamp:    ts
+    };
+
+    if (typeof emailjs === 'undefined') return;
+    try {
+      // 1. To visitor
+      await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, Object.assign({}, base, {
+        lead_title: "Your Oracle Consultation Summary — Simpl'IT",
+        lead_email: toEmail
+      }));
+      // 2. To contact@simplitconsulting.com
+      await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, Object.assign({}, base, {
+        lead_title: 'Aria Lead — ' + toEmail,
+        lead_email: 'contact@simplitconsulting.com'
+      }));
+      // 3. To shameembauccha@simplitconsulting.com
+      await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, Object.assign({}, base, {
+        lead_title: 'Aria Lead — ' + toEmail,
+        lead_email: 'shameembauccha@simplitconsulting.com'
+      }));
+    } catch(e) { console.error('Email error:', e); }
+  }
+
+  // ── TRANSCRIPT PROMPT ────────────────────────────────────────
+  var transcriptShown = false;
+
+  function showTranscriptPrompt() {
+    if (transcriptShown || emailSent) return;
+    transcriptShown = true;
+    var msgs = document.getElementById('ariaMessages');
+    var wrap = document.createElement('div');
+    wrap.className = 'aria-msg aria-bot';
+    wrap.id = 'ariaTranscriptCard';
+    var av = document.createElement('div');
+    av.className = 'aria-msg-av aria-av-aria';
+    av.textContent = 'A';
+    var card = document.createElement('div');
+    card.className = 'aria-lead-card';
+    card.innerHTML = '<h4>Get a summary of this conversation</h4>' +
+      '<p>I can email you a structured summary of what we discussed.</p>' +
+      '<input type="email" id="ariaTEmail" placeholder="Your email address" />' +
+      '<div class="aria-lead-btns">' +
+      '<button class="aria-lead-submit" id="ariaTSubmit">Send me the summary &#8594;</button>' +
+      '<button class="aria-lead-skip" id="ariaTSkip">No thanks</button>' +
+      '</div>';
+    wrap.appendChild(av);
+    wrap.appendChild(card);
+    msgs.appendChild(wrap);
+    scrollDown();
+    document.getElementById('ariaTSubmit').onclick = function() {
+      var em = document.getElementById('ariaTEmail').value.trim();
+      if (!em) { alert('Please enter your email.'); return; }
+      wrap.remove();
+      sendEmail(em, visitorName, visitorCompany);
+      addBot('Done! Your conversation summary is on its way to ' + em + '.');
+    };
+    document.getElementById('ariaTSkip').onclick = function() {
+      wrap.remove();
+      addBot('No problem — you can always reach us at contact@simplitconsulting.com.');
+    };
+  }
+
+  // Inactivity: show transcript prompt after 10 min of no messages
+  var inactivityTimer = null;
+  function resetInactivity() {
+    clearTimeout(inactivityTimer);
+    if (messageCount >= 2 && !emailSent) {
+      inactivityTimer = setTimeout(function() {
+        if (messageCount >= 2 && !emailSent) showTranscriptPrompt();
+      }, 10 * 60 * 1000);
+    }
+  }
+
   // ── CLEAR ───────────────────────────────────────────────────
   function clearChat() {
     history = []; messageCount = 0; nudgeShown = false; leadCaptured = false;
-    transcriptSent = false; clearTimeout(inactivityTimer);
+    visitorName = ''; visitorEmail = ''; visitorCompany = ''; emailSent = false;
+    transcriptShown = false; clearTimeout(inactivityTimer);
     document.getElementById('ariaMessages').innerHTML = '';
     showWelcome();
   }
@@ -859,8 +821,8 @@ YOUR PERSONA AND BEHAVIOUR:
     return '<p>' + text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/\[(.*?)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-      .replace(/https?:\/\/[^\s<>"]+/g, url => `<a href="${url}" target="_blank" rel="noopener">${url}</a>`)
+      .replace(/\[(.*?)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+      .replace(/https?:\/\/[^\s<>"]+/g, function(url) { return '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>'; })
       .replace(/\n\n/g, '</p><p>')
       .replace(/\n/g, '<br>') + '</p>';
   }
@@ -870,245 +832,52 @@ YOUR PERSONA AND BEHAVIOUR:
     setTimeout(() => m.scrollTop = m.scrollHeight, 50);
   }
 
-  // ── VOICE INPUT ─────────────────────────────────────────────
-  let recognition = null;
-  const micBtn = document.getElementById('ariaMicBtn');
-
-  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SR();
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-
-    recognition.onstart = () => micBtn.classList.add('recording');
-    recognition.onend   = () => micBtn.classList.remove('recording');
-
-    recognition.onresult = (e) => {
-      const transcript = Array.from(e.results)
-        .map(r => r[0].transcript).join('');
-      const input = document.getElementById('ariaInput');
-      input.value = transcript;
-      input.style.height = 'auto';
-      input.style.height = Math.min(input.scrollHeight, 100) + 'px';
-      if (e.results[e.results.length - 1].isFinal) {
-        setTimeout(() => send(), 300);
-      }
-    };
-
-    recognition.onerror = (e) => {
-      micBtn.classList.remove('recording');
-      if (e.error !== 'no-speech') console.warn('Speech error:', e.error);
-    };
-
-    micBtn.addEventListener('click', () => {
-      if (micBtn.classList.contains('recording')) {
-        recognition.stop();
-      } else {
-        recognition.start();
-      }
-    });
-  } else {
-    micBtn.title = 'Voice input not supported in this browser';
-    micBtn.style.opacity = '0.4';
-    micBtn.style.cursor = 'not-allowed';
-  }
-
-  // ── FILE UPLOAD ──────────────────────────────────────────────
-  let pendingFile = null; // { base64, mimeType, name }
-
-  function clearAriaFile() {
-    pendingFile = null;
-    document.getElementById('ariaFileInput').value = '';
-    document.getElementById('ariaFilePreview').style.display = 'none';
-    document.getElementById('ariaUploadBtn').classList.remove('has-file');
-  }
-
-  document.getElementById('ariaFileInput').addEventListener('change', function () {
-    const file = this.files[0];
-    if (!file) return;
-
-    const maxMB = 10;
-    if (file.size > maxMB * 1024 * 1024) {
-      alert('File too large — please upload a file under 10MB.');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const base64 = e.target.result.split(',')[1];
-      pendingFile = { base64, mimeType: file.type, name: file.name };
-      document.getElementById('ariaFileName').textContent = '📎 ' + file.name;
-      document.getElementById('ariaFilePreview').style.display = 'block';
-      document.getElementById('ariaUploadBtn').classList.add('has-file');
-    };
-    reader.readAsDataURL(file);
-  });
-
-  // ── QUICK REPLIES DROPDOWN ──────────────────────────────────
-  const qrToggle   = document.getElementById('ariaQrToggle');
-  const qrDropdown = document.getElementById('ariaQrDropdown');
-
-  qrToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    qrDropdown.classList.toggle('open');
-  });
-
-  // Event delegation — works inside IIFE, no global scope needed
-  qrDropdown.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const item = e.target.closest('.aria-qr-drop-item');
-    if (item) {
-      qrDropdown.classList.remove('open');
-      send(item.textContent.trim());
-    }
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('#ariaQrWrap')) {
-      qrDropdown.classList.remove('open');
-    }
-  });
-
-  // ── TRANSCRIPT ───────────────────────────────────────────────
-  let transcriptSent = false;
-  let inactivityTimer = null;
-
-  function resetInactivityTimer() {
-    clearTimeout(inactivityTimer);
-    if (messageCount >= 2 && !transcriptSent && !leadCaptured) {
-      inactivityTimer = setTimeout(() => {
-        if (isOpen && messageCount >= 2 && !transcriptSent && !leadCaptured) showTranscriptPrompt();
-      }, 10 * 60 * 1000); // 10 minutes inactivity
-    }
-  }
-
-  function showTranscriptPrompt() {
-    if (transcriptSent) return;
-    const msgs = document.getElementById('ariaMessages');
-    const wrap = document.createElement('div');
-    wrap.className = 'aria-msg aria-bot';
-    wrap.id = 'ariaTranscriptPrompt';
-
-    const av = document.createElement('div');
-    av.className = 'aria-msg-av aria-av-aria';
-    av.textContent = 'A';
-
-    const card = document.createElement('div');
-    card.className = 'aria-transcript-card';
-    card.innerHTML = `
-      <h4>Would you like a transcript?</h4>
-      <p>I can email you a summary of our conversation with the key points we covered.</p>
-      <input type="email" id="ariaTranscriptEmail" placeholder="Your email address" />
-      <div class="aria-transcript-btns">
-        <button class="aria-transcript-submit" id="ariaTranscriptSubmit">Send me the transcript →</button>
-        <button class="aria-transcript-skip" id="ariaTranscriptSkip">No thanks</button>
-      </div>
-    `;
-
-    wrap.appendChild(av);
-    wrap.appendChild(card);
-    msgs.appendChild(wrap);
-    scrollDown();
-
-    document.getElementById('ariaTranscriptSubmit').onclick = submitTranscript;
-    document.getElementById('ariaTranscriptSkip').onclick   = dismissTranscript;
-  }
-
-  async function submitTranscript() {
-    const email = document.getElementById('ariaTranscriptEmail')?.value.trim();
-    if (!email) { alert('Please enter your email address.'); return; }
-
-    transcriptSent = true;
-    document.getElementById('ariaTranscriptPrompt')?.remove();
-
-    // Build structured summary for AI
-    const rawHistory = history
-      .map(m => `\${m.role === 'user' ? 'Visitor' : 'Aria'}: \${m.parts[0].text}`)
-      .join('\n\n');
-
-    // Ask Gemini to produce a structured summary
-    let structuredSummary = rawHistory;
-    try {
-      const sumRes = await fetch(PROXY_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [
-            { role: 'user', parts: [{ text: `You are a business analyst assistant. Based on the following Oracle consulting chat conversation, produce a concise, structured email summary with these sections:
-1. Visitor Profile (what you know about them — company, role, region if mentioned)
-2. Key Topics Discussed
-3. Pain Points / Challenges Identified
-4. Services of Interest
-5. Recommended Next Steps
-
-Keep it professional and concise. Address the visitor directly.
-
-CONVERSATION:
-\${rawHistory.substring(0, 3000)}` }] }
-          ]
-        })
-      });
-      const sumData = await sumRes.json();
-      structuredSummary = sumData?.candidates?.[0]?.content?.parts?.[0]?.text || rawHistory;
-    } catch(e) { console.warn('Summary generation failed, using raw transcript'); }
-
-    // Send emails: visitor copy + internal copy
-    try {
-      if (typeof emailjs !== 'undefined') {
-        const ts = new Date().toISOString();
-        const tid = 'TRANSCRIPT_' + Date.now();
-
-        // To visitor — branded as from Simpl'IT
-        await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
-          lead_id:      tid,
-          lead_name:    "Simpl'IT Consulting",
-          lead_company: "Simpl'IT Consulting",
-          lead_title:   "Your Oracle Consultation Summary — Simpl'IT",
-          lead_email:   email,
-          lead_phone:   '+230 57984505',
-          lead_notes:   'Thank you for chatting with Aria. Here is a structured summary of your consultation.',
-          profile_text: structuredSummary,
-          lead_json:    JSON.stringify({ transcript_id: tid, visitor_email: email, timestamp: ts }),
-          timestamp:    ts
-        });
-
-        // Internal copy to Simpl'IT — for follow-up
-        await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
-          lead_id:      tid + '_INT',
-          lead_name:    "Simpl'IT — Internal",
-          lead_company: "Simpl'IT Consulting",
-          lead_title:   'Aria Transcript — ' + email,
-          lead_email:   'contact@simplitconsulting.com',
-          lead_phone:   '',
-          lead_notes:   'Visitor: ' + email + ' | ID: ' + tid,
-          profile_text: structuredSummary,
-          lead_json:    JSON.stringify({ transcript_id: tid, visitor_email: email, timestamp: ts }),
-          timestamp:    ts
-        });
-      }
-    } catch(e) { console.error('Transcript email error:', e); }
-
-    addBot(`Done! A summary of our conversation is on its way to ${email}. Feel free to reach out anytime — we're here to help.`);
-  }
-
-  function dismissTranscript() {
-    document.getElementById('ariaTranscriptPrompt')?.remove();
-    addBot("No problem at all. You can always reach us at contact@simplitconsulting.com if you'd like to continue the conversation.");
-  }
-
   // ── EVENT LISTENERS ─────────────────────────────────────────
   document.getElementById('ariaBubble').addEventListener('click', toggle);
   document.getElementById('ariaCloseBtn').addEventListener('click', toggle);
   document.getElementById('ariaClearBtn').addEventListener('click', clearChat);
-  document.getElementById('ariaTranscriptBtn').addEventListener('click', () => {
+
+  // ? button — builds menu from arrays, displays above header
+  document.getElementById('ariaQrBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    var menu = document.getElementById('ariaQrMenu');
+    if (menu.style.display === 'block') { menu.style.display = 'none'; return; }
+    menu.innerHTML = '';
+    function addSection(label, items) {
+      var lbl = document.createElement('div');
+      lbl.style.cssText = 'font-size:0.62rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#b0a898;padding:6px 14px 3px;font-family:monospace;';
+      lbl.textContent = label;
+      menu.appendChild(lbl);
+      items.forEach(function(q) {
+        var btn = document.createElement('button');
+        btn.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;padding:8px 14px;font-size:0.82rem;color:#1a3a5c;cursor:pointer;font-family:sans-serif;line-height:1.4;';
+        btn.textContent = q;
+        btn.onmouseover = function() { btn.style.background = '#f0ede4'; };
+        btn.onmouseout  = function() { btn.style.background = 'none'; };
+        btn.onclick = function(ev) { ev.stopPropagation(); menu.style.display = 'none'; send(q); };
+        menu.appendChild(btn);
+      });
+    }
+    addSection('Discover us', QR_DISCOVER);
+    addSection('Common questions', QR_COMMON);
+    menu.style.display = 'block';
+  });
+
+  // Transcript button
+  document.getElementById('ariaTranscriptBtn').addEventListener('click', function() {
     if (messageCount < 1) {
-      addBot("We haven't chatted yet! Ask me anything and then I can send you a transcript.");
-    } else if (transcriptSent) {
-      addBot("I've already sent your transcript. Is there anything else I can help you with?");
+      addBot("We haven't chatted yet — ask me anything first!");
+    } else if (emailSent) {
+      addBot('Already sent! Is there anything else I can help with?');
     } else {
       showTranscriptPrompt();
     }
+  });
+
+  // Close ? menu on outside click
+  document.addEventListener('click', function() {
+    var menu = document.getElementById('ariaQrMenu');
+    if (menu) menu.style.display = 'none';
   });
   document.getElementById('ariaSendBtn').addEventListener('click', () => send());
 
@@ -1125,5 +894,7 @@ CONVERSATION:
   setTimeout(() => {
     document.getElementById('ariaNotifDot')?.classList.remove('aria-hidden');
   }, 8000);
+
+  } // end init
 
 })();
