@@ -71,8 +71,7 @@
     '.aria-bubble-msg { max-width: 78%; padding: 10px 13px; border-radius: 14px; font-size: 0.84rem; line-height: 1.55; color: #0f0f0f; }',
     '.aria-msg.aria-bot .aria-bubble-msg { background: #f0ede4; border-bottom-left-radius: 4px; }',
     '.aria-msg.aria-user .aria-bubble-msg { background: #1a3a5c; color: white; border-bottom-right-radius: 4px; }',
-    '.aria-msg-tick { font-size: 0.65rem; color: rgba(255,255,255,0.4); text-align: right; margin-top: 2px; padding-right: 2px; transition: color 0.3s; }',
-    '.aria-msg-tick.read { color: #60a5fa; }',
+
     '.aria-bubble-msg p { margin: 0 0 6px; } .aria-bubble-msg p:last-child { margin-bottom: 0; }',
     '.aria-bubble-msg strong { color: #1a3a5c; font-weight: 600; }',
     '.aria-msg.aria-user .aria-bubble-msg strong { color: #e8b85a; }',
@@ -276,9 +275,6 @@
         || 'I\'m having a moment - please try again or reach out at contact@simplitconsulting.com.';
       addBot(reply);
       history.push({ role: 'model', parts: [{ text: reply }] });
-      // Mark last user message as read
-      var ticks = document.querySelectorAll('.aria-msg-tick');
-      if (ticks.length) ticks[ticks.length - 1].classList.add('read');
       if (messageCount >= 3 && !nudgeShown && !leadCaptured) {
         nudgeShown = true;
         setTimeout(showNudge, 800);
@@ -356,18 +352,8 @@
     var bubble = document.createElement('div');
     bubble.className = 'aria-bubble-msg';
     bubble.textContent = text;
-    var tick = document.createElement('div');
-    tick.className = 'aria-msg-tick';
-    tick.id = 'ariaTick_' + Date.now();
-    tick.innerHTML = '&#10003;&#10003;';
-
-    var wrapper = document.createElement('div');
-    wrapper.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;';
-    wrapper.appendChild(bubble);
-    wrapper.appendChild(tick);
-
     msg.appendChild(av);
-    msg.appendChild(wrapper);
+    msg.appendChild(bubble);
     msgs.appendChild(msg);
     scrollDown();
   }
