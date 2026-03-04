@@ -330,11 +330,12 @@
       flex: 1; border: 1.5px solid #d8d3c8; border-radius: 20px;
       padding: 9px 14px; font-family: 'DM Sans', sans-serif;
       font-size: 0.84rem; outline: none; resize: none;
-      max-height: 100px; line-height: 1.4;
+      max-height: 100px; line-height: 1.4; color: #1a1a1a;
       transition: border-color 0.15s; background: #f8f6f1;
+      -webkit-text-fill-color: #1a1a1a;
     }
-    .aria-input:focus { border-color: #1a3a5c; background: white; }
-    .aria-input::placeholder { color: #b0a898; }
+    .aria-input:focus { border-color: #1a3a5c; background: white; color: #1a1a1a; -webkit-text-fill-color: #1a1a1a; }
+    .aria-input::placeholder { color: #b0a898; -webkit-text-fill-color: #b0a898; }
     .aria-send-btn {
       width: 36px; height: 36px; border-radius: 50%;
       background: #1a3a5c; border: none; cursor: pointer;
@@ -820,15 +821,16 @@ YOUR PERSONA AND BEHAVIOUR:
 
     try {
       if (typeof emailjs !== 'undefined') {
+        // Send lead notification to Simpl'IT only — visitor gets transcript separately if requested
         await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
           lead_id:      leadData.id,
           lead_name:    name    || 'Not provided',
           lead_company: company || 'Not provided',
-          lead_title:   'Aria Chat Inquiry',
-          lead_email:   email,
+          lead_title:   'New Lead — Aria Chat Widget',
+          lead_email:   'contact@simplitconsulting.com',
           lead_phone:   '',
-          lead_notes:   'Lead from Aria chat widget',
-          profile_text: `Source: Aria Chat Widget\n\nConversation:\n\n${summary.substring(0, 1500)}`,
+          lead_notes:   `Visitor contact: ${email}${company ? ' | ' + company : ''}`,
+          profile_text: `VISITOR DETAILS\nName: ${name || 'Not provided'}\nEmail: ${email}\nCompany: ${company || 'Not provided'}\n\nCONVERSATION SUMMARY\n\n${summary.substring(0, 3000)}`,
           lead_json:    JSON.stringify(leadData, null, 2),
           timestamp:    leadData.timestamp
         });
@@ -1042,34 +1044,38 @@ CONVERSATION:
       structuredSummary = sumData?.candidates?.[0]?.content?.parts?.[0]?.text || rawHistory;
     } catch(e) { console.warn('Summary generation failed, using raw transcript'); }
 
-    // Send to visitor
+    // Send emails: visitor copy + internal copy
     try {
       if (typeof emailjs !== 'undefined') {
+        const ts = new Date().toISOString();
+        const tid = 'TRANSCRIPT_' + Date.now();
+
+        // To visitor — branded as from Simpl'IT
         await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
-          lead_id:      'TRANSCRIPT_' + Date.now(),
-          lead_name:    'Aria Chat Visitor',
-          lead_company: '',
-          lead_title:   'Aria Conversation Transcript',
+          lead_id:      tid,
+          lead_name:    "Simpl'IT Consulting",
+          lead_company: "Simpl'IT Consulting",
+          lead_title:   "Your Oracle Consultation Summary — Simpl'IT",
           lead_email:   email,
-          lead_phone:   '',
-          lead_notes:   'Transcript requested by visitor',
+          lead_phone:   '+230 57984505',
+          lead_notes:   'Thank you for chatting with Aria. Here is a structured summary of your consultation.',
           profile_text: structuredSummary,
-          lead_json:    JSON.stringify({ timestamp: new Date().toISOString(), source: 'Aria Transcript Request', email }),
-          timestamp:    new Date().toISOString()
+          lead_json:    JSON.stringify({ transcript_id: tid, visitor_email: email, timestamp: ts }),
+          timestamp:    ts
         });
 
-        // Copy to Simpl'IT
+        // Internal copy to Simpl'IT — for follow-up
         await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
-          lead_id:      'TRANSCRIPT_COPY_' + Date.now(),
-          lead_name:    'Aria Chat Visitor',
-          lead_company: '',
-          lead_title:   '[Internal Copy] Aria Conversation — ' + email,
+          lead_id:      tid + '_INT',
+          lead_name:    "Simpl'IT — Internal",
+          lead_company: "Simpl'IT Consulting",
+          lead_title:   'Aria Transcript — ' + email,
           lead_email:   'contact@simplitconsulting.com',
           lead_phone:   '',
-          lead_notes:   'Internal copy of visitor transcript',
+          lead_notes:   'Visitor: ' + email + ' | ID: ' + tid,
           profile_text: structuredSummary,
-          lead_json:    JSON.stringify({ timestamp: new Date().toISOString(), visitorEmail: email }),
-          timestamp:    new Date().toISOString()
+          lead_json:    JSON.stringify({ transcript_id: tid, visitor_email: email, timestamp: ts }),
+          timestamp:    ts
         });
       }
     } catch(e) { console.error('Transcript email error:', e); }
