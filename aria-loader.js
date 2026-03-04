@@ -254,10 +254,6 @@
     setTyping(true);
     history.push({ role: 'user', parts: [{ text: text }] });
 
-    var slowTimer = setTimeout(function() {
-      var t = document.getElementById('ariaTypingMsg');
-      if (t) t.querySelector('.aria-bubble-msg').innerHTML = '<div class="aria-typing"><span></span><span></span><span></span></div><div style="font-size:0.75rem;color:#b0a898;margin-top:6px;">Still working on this one...</div>';
-    }, 15000);
 
     if (attachedFile) {
       history[history.length - 1] = { role: 'user', parts: [
@@ -289,12 +285,10 @@
         nudgeShown = true;
         setTimeout(showNudge, 800);
       }
-      clearTimeout(slowTimer);
       setTyping(false);
       resetInactivity();
     })
     .catch(function() {
-      clearTimeout(slowTimer);
       addBot('I\'m having a moment - please try again or reach out at contact@simplitconsulting.com.');
       setTyping(false);
     });
