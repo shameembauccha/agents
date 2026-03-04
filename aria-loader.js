@@ -541,76 +541,78 @@
     setTimeout(function() { m.scrollTop = m.scrollHeight; }, 50);
   }
 
-  // ── EVENTS ──────────────────────────────────────────────────
-  document.getElementById('ariaBubble').addEventListener('click', toggle);
-  document.getElementById('ariaCloseBtn').addEventListener('click', toggle);
-  document.getElementById('ariaClearBtn').addEventListener('click', clearChat);
-  document.getElementById('ariaSendBtn').addEventListener('click', function() { send(); });
-
-  document.getElementById('ariaInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
-  });
-  document.getElementById('ariaInput').addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-  });
-
-  // ? button - question menu
-  document.getElementById('ariaQrBtn').addEventListener('click', function(e) {
-    e.stopPropagation();
-    var menu = document.getElementById('ariaQrMenu');
-    if (menu.style.display === 'block') { menu.style.display = 'none'; return; }
-    menu.innerHTML = '';
-
-    function addSection(label, items) {
-      var lbl = document.createElement('div');
-      lbl.style.cssText = 'font-size:0.62rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#b0a898;padding:6px 14px 3px;';
-      lbl.textContent = label;
-      menu.appendChild(lbl);
-      for (var i = 0; i < items.length; i++) {
-        (function(q) {
-          var btn = document.createElement('button');
-          btn.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;padding:8px 14px;font-size:0.82rem;color:#1a3a5c;cursor:pointer;line-height:1.4;';
-          btn.textContent = q;
-          btn.onmouseover = function() { this.style.background = '#f0ede4'; };
-          btn.onmouseout  = function() { this.style.background = 'none'; };
-          btn.onclick = function(ev) { ev.stopPropagation(); menu.style.display = 'none'; send(q); };
-          menu.appendChild(btn);
-        })(items[i]);
-      }
-    }
-
-    addSection('Discover us', QR_DISCOVER);
-    addSection('Common questions', QR_COMMON);
-
-    // Position menu above the ? button
-    var btn = document.getElementById('ariaQrBtn');
-    var rect = btn.getBoundingClientRect();
-    menu.style.right = (window.innerWidth - rect.right) + 'px';
-    menu.style.top   = (rect.top - 8) + 'px';
-    menu.style.transform = 'translateY(-100%)';
-    menu.style.display = 'block';
-  });
-
-  // Transcript button
-  document.getElementById('ariaTranscriptBtn').addEventListener('click', function() {
-    if (messageCount < 1) {
-      addBot('We haven\'t chatted yet - ask me anything first!');
-    } else if (emailSent) {
-      addBot('Already sent! Is there anything else I can help with?');
-    } else {
-      showTranscriptPrompt();
-    }
-  });
-
-  document.addEventListener('click', function() {
-    var m = document.getElementById('ariaQrMenu');
-    if (m) m.style.display = 'none';
-  });
-
+  // ── EVENTS ──
   setTimeout(function() {
-    var dot = document.getElementById('ariaNotifDot');
-    if (dot) dot.classList.remove('aria-hidden');
-  }, 8000);
-
+    document.getElementById('ariaBubble').addEventListener('click', toggle);
+    document.getElementById('ariaCloseBtn').addEventListener('click', toggle);
+    document.getElementById('ariaClearBtn').addEventListener('click', clearChat);
+    document.getElementById('ariaSendBtn').addEventListener('click', function() { send(); });
+  
+    document.getElementById('ariaInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    });
+    document.getElementById('ariaInput').addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+    });
+  
+    // ? button - question menu
+    document.getElementById('ariaQrBtn').addEventListener('click', function(e) {
+      e.stopPropagation();
+      var menu = document.getElementById('ariaQrMenu');
+      if (menu.style.display === 'block') { menu.style.display = 'none'; return; }
+      menu.innerHTML = '';
+  
+      function addSection(label, items) {
+        var lbl = document.createElement('div');
+        lbl.style.cssText = 'font-size:0.62rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#b0a898;padding:6px 14px 3px;';
+        lbl.textContent = label;
+        menu.appendChild(lbl);
+        for (var i = 0; i < items.length; i++) {
+          (function(q) {
+            var btn = document.createElement('button');
+            btn.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;padding:8px 14px;font-size:0.82rem;color:#1a3a5c;cursor:pointer;line-height:1.4;';
+            btn.textContent = q;
+            btn.onmouseover = function() { this.style.background = '#f0ede4'; };
+            btn.onmouseout  = function() { this.style.background = 'none'; };
+            btn.onclick = function(ev) { ev.stopPropagation(); menu.style.display = 'none'; send(q); };
+            menu.appendChild(btn);
+          })(items[i]);
+        }
+      }
+  
+      addSection('Discover us', QR_DISCOVER);
+      addSection('Common questions', QR_COMMON);
+  
+      // Position menu above the ? button
+      var btn = document.getElementById('ariaQrBtn');
+      var rect = btn.getBoundingClientRect();
+      menu.style.right = (window.innerWidth - rect.right) + 'px';
+      menu.style.top   = (rect.top - 8) + 'px';
+      menu.style.transform = 'translateY(-100%)';
+      menu.style.display = 'block';
+    });
+  
+    // Transcript button
+    document.getElementById('ariaTranscriptBtn').addEventListener('click', function() {
+      if (messageCount < 1) {
+        addBot('We haven\'t chatted yet - ask me anything first!');
+      } else if (emailSent) {
+        addBot('Already sent! Is there anything else I can help with?');
+      } else {
+        showTranscriptPrompt();
+      }
+    });
+  
+    document.addEventListener('click', function() {
+      var m = document.getElementById('ariaQrMenu');
+      if (m) m.style.display = 'none';
+    });
+  
+    setTimeout(function() {
+      var dot = document.getElementById('ariaNotifDot');
+      if (dot) dot.classList.remove('aria-hidden');
+    }, 8000);
+  
+  }, 0);
 })();
