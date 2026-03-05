@@ -9,6 +9,13 @@
 
   // -- CONFIG --------------------------------------------------
   var PROXY_URL      = 'https://simplitconsulting.com/wp-json/simplit/v1/aria';
+  var MODELS = [
+    'gemini-2.5-flash',
+    'gemini-2.0-flash',
+    'gemini-1.5-flash',
+    'gemini-1.5-flash-8b'
+  ];
+  var modelIndex = 0;
   var EMAILJS_SVC    = 'service_rs59uuo';
   var EMAILJS_TPL    = 'template_el8vjzi';
   var EMAILJS_KEY    = 'htvC-XwdHLSAXmhnv';
@@ -26,6 +33,7 @@
   style.id = 'aria-styles';
   style.textContent = [
     '#aria-widget * { box-sizing: border-box; }',
+    '@media (prefers-color-scheme: dark) { .aria-panel { background: #1e2535 !important; } .aria-messages { background: #1e2535; } .aria-msg.aria-bot .aria-bubble-msg { background: #2a3548 !important; color: #e8e4dc !important; } .aria-input-row { background: #1e2535 !important; border-color: #2a3548 !important; } .aria-input { background: #2a3548 !important; border-color: #3a4a6b !important; color: #e8e4dc !important; } .aria-input:focus { background: #2a3548 !important; } .aria-footer-tag { border-color: #2a3548 !important; } }',
     '#aria-widget { position: fixed; bottom: 24px; right: 24px; z-index: 999999; font-family: DM Sans, sans-serif; }',
 
     '.aria-bubble { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #1a3a5c 0%, #2d5f8a 100%); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(26,58,92,0.35); transition: transform 0.2s ease, box-shadow 0.2s ease; position: relative; animation: ariaBubblePop 0.4s cubic-bezier(0.34,1.56,0.64,1); }',
@@ -44,6 +52,8 @@
 
     '.aria-panel { position: fixed; bottom: 90px; right: 24px; width: 500px; height: 760px; max-height: calc(100vh - 100px); background: white; border-radius: 16px; box-shadow: 0 16px 56px rgba(15,15,15,0.18); display: flex; flex-direction: column; overflow: hidden; transform-origin: bottom right; transform: scale(0.85) translateY(16px); opacity: 0; pointer-events: none; transition: transform 0.25s cubic-bezier(0.34,1.4,0.64,1), opacity 0.2s ease; z-index: 999998; }',
     '.aria-panel.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }',
+    '.aria-panel.minimised .aria-messages, .aria-panel.minimised .aria-input-row, .aria-panel.minimised .aria-footer-tag, .aria-panel.minimised #ariaAttachPreview { display: none !important; }',
+    '.aria-panel.minimised { height: auto !important; }',
     '@media (max-width: 520px) { .aria-panel { width: calc(100vw - 16px); right: 8px; bottom: 80px; height: calc(100vh - 100px); max-height: none; } }',
 
     '.aria-header { background: linear-gradient(135deg, #1a3a5c 0%, #2d5f8a 100%); padding: 12px 14px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; position: relative; }',
@@ -114,7 +124,9 @@
     '.aria-send-btn:disabled { background: #d8d3c8; cursor: not-allowed; }',
     '.aria-send-btn svg { width: 16px; height: 16px; fill: white; }',
 
-    '.aria-footer-tag { padding: 6px 14px 8px; text-align: center; font-size: 0.62rem; color: #b0a898; font-family: DM Mono, monospace; letter-spacing: 0.06em; border-top: 1px solid #f0ede4; flex-shrink: 0; }'
+    '.aria-footer-tag { padding: 6px 14px 8px; text-align: center; font-size: 0.62rem; color: #b0a898; font-family: DM Mono, monospace; letter-spacing: 0.06em; border-top: 1px solid #f0ede4; flex-shrink: 0; }',
+    '.aria-copy-btn { background: none; border: none; cursor: pointer; color: #b0a898; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; transition: all 0.15s; margin-top: 2px; align-self: flex-start; }',
+    '.aria-copy-btn:hover { color: #1a3a5c; background: #f0ede4; }'
   ].join('\n');
   document.head.appendChild(style);
 
@@ -134,6 +146,7 @@
     + '<button class="aria-hdr-btn" id="ariaQrBtn" title="Suggested questions">?</button>'
     + '<button class="aria-hdr-btn" id="ariaTranscriptBtn" title="Email conversation">&#9993;</button>'
     + '<button class="aria-hdr-btn" id="ariaClearBtn" title="New conversation">&#8635;</button>'
+    + '<button class="aria-hdr-btn" id="ariaMinBtn" title="Minimise">&#8722;</button>'
     + '<button class="aria-hdr-btn" id="ariaCloseBtn" title="Close">&#10005;</button>'
     + '</div>'
     + '</div>'
@@ -149,7 +162,7 @@
     + '<textarea class="aria-input" id="ariaInput" placeholder="Ask me anything about Oracle..." rows="1"></textarea>'
     + '<button class="aria-send-btn" id="ariaSendBtn"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>'
     + '</div>'
-    + '<div class="aria-footer-tag">Simpl\'IT Consulting &middot; Oracle, Simplified.</div>'
+    + '<div class="aria-footer-tag">Simpl\'IT Consulting &middot; Oracle, Simplified. &middot; Powered by Gemini</div>'
     + '</div>'
     + '<div class="aria-qr-menu" id="ariaQrMenu"></div>';
   document.body.appendChild(widget);
@@ -270,28 +283,46 @@
       { role: 'model', parts: [{ text: 'Understood. I am Aria, ready to help.' }] }
     ].concat(history);
 
-    fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: contents })
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      var reply = (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text)
-        || 'I\'m having a moment - please try again or reach out at contact@simplitconsulting.com.';
-      addBot(reply);
-      history.push({ role: 'model', parts: [{ text: reply }] });
-      if (messageCount >= 3 && !nudgeShown && !leadCaptured) {
-        nudgeShown = true;
-        setTimeout(showNudge, 800);
+    function tryModel(idx, contents) {
+      if (idx >= MODELS.length) {
+        addBot('I\'m having a moment - please try again or reach out at contact@simplitconsulting.com.');
+        setTyping(false);
+        return;
       }
-      setTyping(false);
-      resetInactivity();
-    })
-    .catch(function() {
-      addBot('I\'m having a moment - please try again or reach out at contact@simplitconsulting.com.');
-      setTyping(false);
-    });
+      fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: contents, model: MODELS[idx] })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data && data.error && data.error.code === 429) {
+          modelIndex = idx + 1;
+          tryModel(modelIndex, contents);
+          return;
+        }
+        var reply = (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text)
+          || 'I\'m having a moment - please try again or reach out at contact@simplitconsulting.com.';
+        addBot(reply);
+        history.push({ role: 'model', parts: [{ text: reply }] });
+        if (messageCount >= 3 && !nudgeShown && !leadCaptured) {
+          nudgeShown = true;
+          setTimeout(showNudge, 800);
+        }
+        if (messageCount === 5 && !leadCaptured) {
+          setTimeout(function() {
+            addBot('Based on our conversation, the **Guided Journey** might help you map the right path forward. It takes 2 minutes: https://simplitconsulting.com/journey');
+          }, 1200);
+        }
+        setTyping(false);
+        resetInactivity();
+      })
+      .catch(function() {
+        modelIndex = idx + 1;
+        tryModel(modelIndex, contents);
+      });
+    }
+    tryModel(modelIndex, contents);
   }
 
   // -- RENDER --------------------------------------------------
@@ -308,6 +339,22 @@
     bubble.className = 'aria-bubble-msg';
     bubble.innerHTML = fmt(text);
     right.appendChild(bubble);
+
+    // Copy button
+    var copyBtn = document.createElement('button');
+    copyBtn.className = 'aria-copy-btn';
+    copyBtn.textContent = 'Copy';
+    copyBtn.onclick = function() {
+      var txt = bubble.innerText || bubble.textContent;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(txt).then(function() {
+          copyBtn.textContent = 'Copied!';
+          setTimeout(function() { copyBtn.textContent = 'Copy'; }, 1500);
+        });
+      }
+    };
+    right.appendChild(copyBtn);
+
     if (qr && qr.length) {
       var qrBlock = document.createElement('div');
       qrBlock.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin-top:4px;';
@@ -372,11 +419,23 @@
       var bubble = document.createElement('div');
       bubble.className = 'aria-bubble-msg';
       bubble.innerHTML = '<div class="aria-typing"><span></span><span></span><span></span></div>';
+      bubble._slowTimer = setTimeout(function() {
+        var st = bubble.querySelector('.aria-slow-msg');
+        if (!st) {
+          var d = document.createElement('div');
+          d.className = 'aria-slow-msg';
+          d.style.cssText = 'font-size:0.72rem;color:#b0a898;margin-top:5px;';
+          d.textContent = 'Still working on this...';
+          bubble.appendChild(d);
+        }
+      }, 12000);
       msg.appendChild(av);
       msg.appendChild(bubble);
       msgs.appendChild(msg);
       scrollDown();
     } else if (!val && existing) {
+      var b = existing.querySelector('.aria-bubble-msg');
+      if (b && b._slowTimer) clearTimeout(b._slowTimer);
       existing.remove();
     }
   }
@@ -444,20 +503,11 @@
     var tid = 'ARIA_' + Date.now();
     var nm  = toName    || 'Visitor';
     var co  = toCompany || '';
-    fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{
-        role: 'user',
-        parts: [{ text: 'Summarise this Oracle consulting chat professionally with sections: 1.Visitor Profile 2.Key Topics 3.Pain Points 4.Services of Interest 5.Next Steps. Address visitor directly.\n\nCHAT:\n' + conv.substring(0, 3000) }]
-      }]})
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      var summary = (d && d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts && d.candidates[0].content.parts[0].text) || conv;
-      dispatchEmails(tid, ts, toEmail, nm, co, summary);
-    })
-    .catch(function() { dispatchEmails(tid, ts, toEmail, nm, co, conv); });
+    // Build summary from conversation history directly - no extra API call
+    var summary = 'CONVERSATION SUMMARY\n\n';
+    summary += 'Visitor: ' + (nm || toEmail) + (co ? ' | ' + co : '') + '\n\n';
+    summary += 'FULL CONVERSATION:\n\n' + conv;
+    dispatchEmails(tid, ts, toEmail, nm, co, summary);
   }
 
   function dispatchEmails(tid, ts, toEmail, nm, co, summary) {
@@ -556,6 +606,11 @@
 
     document.getElementById('ariaBubble').addEventListener('click', toggle);
     document.getElementById('ariaCloseBtn').addEventListener('click', toggle);
+    document.getElementById('ariaMinBtn').addEventListener('click', function() {
+      var panel = document.getElementById('ariaPanel');
+      panel.classList.toggle('minimised');
+      this.textContent = panel.classList.contains('minimised') ? '+' : '-';
+    });
     document.getElementById('ariaClearBtn').addEventListener('click', clearChat);
     document.getElementById('ariaSendBtn').addEventListener('click', function() { send(); });
 
