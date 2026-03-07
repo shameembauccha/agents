@@ -16,6 +16,50 @@
     'gemini-1.5-flash-8b'
   ];
   var modelIndex = 0;
+
+  // Deep-link service map  -  exact URLs for every service
+  var SERVICE_LINKS = {
+    // Pre-Project
+    'roadmap':    'https://simplitconsulting.com/services/?group=pre&svc=roadmap',
+    'strategy':   'https://simplitconsulting.com/services/?group=pre&svc=roadmap',
+    'bizcase':    'https://simplitconsulting.com/services/?group=pre&svc=bizcase',
+    'business case': 'https://simplitconsulting.com/services/?group=pre&svc=bizcase',
+    'vendor':     'https://simplitconsulting.com/services/?group=pre&svc=vendor',
+    'rfp':        'https://simplitconsulting.com/services/?group=pre&svc=rfp',
+    'contract':   'https://simplitconsulting.com/services/?group=pre&svc=contract',
+    // Delivery
+    'implementation': 'https://simplitconsulting.com/services/?group=delivery&svc=impl',
+    'impl':       'https://simplitconsulting.com/services/?group=delivery&svc=impl',
+    'upgrade':    'https://simplitconsulting.com/services/?group=delivery&svc=upgrade',
+    'migration':  'https://simplitconsulting.com/services/?group=delivery&svc=upgrade',
+    'architecture': 'https://simplitconsulting.com/services/?group=delivery&svc=arch',
+    'data migration': 'https://simplitconsulting.com/services/?group=delivery&svc=datamig',
+    'governance': 'https://simplitconsulting.com/services/?group=delivery&svc=pgov',
+    'staff augmentation': 'https://simplitconsulting.com/services/?group=delivery&svc=staff',
+    'staffing':   'https://simplitconsulting.com/services/?group=delivery&svc=staff',
+    // Post-Project
+    'rescue':     'https://simplitconsulting.com/services/?group=post&svc=rescue',
+    'amo':        'https://simplitconsulting.com/services/?group=post&svc=rescue',
+    'optimisation': 'https://simplitconsulting.com/services/?group=post&svc=optimise',
+    'optimization': 'https://simplitconsulting.com/services/?group=post&svc=optimise',
+    'health check': 'https://simplitconsulting.com/services/?group=post&svc=health',
+    'healthcheck': 'https://simplitconsulting.com/services/?group=post&svc=health',
+    'health':     'https://simplitconsulting.com/services/?group=post&svc=health',
+    'managed support': 'https://simplitconsulting.com/services/?group=post&svc=msupport',
+    'support':    'https://simplitconsulting.com/services/?group=post&svc=msupport',
+    'training':   'https://simplitconsulting.com/services/?group=post&svc=training',
+    'licence':    'https://simplitconsulting.com/services/?group=post&svc=licence',
+    'license':    'https://simplitconsulting.com/services/?group=post&svc=licence',
+    // Specialist
+    'dev':        'https://simplitconsulting.com/services/?group=specialist&svc=dev',
+    'development': 'https://simplitconsulting.com/services/?group=specialist&svc=dev',
+    'analytics':  'https://simplitconsulting.com/services/?group=specialist&svc=analytics',
+    'reporting':  'https://simplitconsulting.com/services/?group=specialist&svc=analytics',
+    'grc':        'https://simplitconsulting.com/services/?group=specialist&svc=grc',
+    'compliance': 'https://simplitconsulting.com/services/?group=specialist&svc=grc',
+    'expert':     'https://simplitconsulting.com/services/?group=specialist&svc=expert',
+    'ask an expert': 'https://simplitconsulting.com/services/?group=specialist&svc=expert'
+  };
   var EMAILJS_SVC    = 'service_rs59uuo';
   var EMAILJS_TPL    = 'template_el8vjzi';
   var EMAILJS_KEY    = 'htvC-XwdHLSAXmhnv';
@@ -180,6 +224,7 @@
   var isTyping        = false;
   var messageCount    = 0;
   var nudgeShown      = false;
+  var journeyNudged   = false;
   var leadCaptured    = false;
   var emailSent       = false;
   var emailSending    = false;
@@ -234,7 +279,14 @@
     + 'PAGE NAVIGATION:\n'
     + '- You receive the current page URL and a snippet of visible content with each message.\n'
     + '- Use this to give contextual help: explain page sections, guide to relevant pages, answer page-specific questions.\n'
-    + '- Always use full URLs when linking: https://simplitconsulting.com/[page]';
+    + '- Always use full URLs when linking: https://simplitconsulting.com/[page]\n\n'
+    + 'SERVICE DEEP LINKS  -  always link to the exact service, never just /services/:\n'
+    + 'Pre-Project: Roadmap https://simplitconsulting.com/services/?group=pre&svc=roadmap | Business Case ?group=pre&svc=bizcase | Vendor Eval ?group=pre&svc=vendor | RFP ?group=pre&svc=rfp | Contract ?group=pre&svc=contract\n'
+    + 'Delivery: Implementation ?group=delivery&svc=impl | Upgrade/Migration ?group=delivery&svc=upgrade | Architecture ?group=delivery&svc=arch | Data Migration ?group=delivery&svc=datamig | Governance ?group=delivery&svc=pgov | Staffing ?group=delivery&svc=staff\n'
+    + 'Post-Project: Rescue/AMO ?group=post&svc=rescue | Optimisation ?group=post&svc=optimise | Health Check ?group=post&svc=health | Managed Support ?group=post&svc=msupport | Training ?group=post&svc=training | Licence Review ?group=post&svc=licence\n'
+    + 'Specialist: Dev/Extensions ?group=specialist&svc=dev | Analytics ?group=specialist&svc=analytics | GRC ?group=specialist&svc=grc | Ask an Expert ?group=specialist&svc=expert\n\n'
+    + 'JOURNEY INVITE  -  trigger naturally when: visitor describes a pain point, asks about cost/timeline, mentions they are stuck, or asks which service fits them. '
+    + 'Say something like: "The quickest way to get a concrete answer is our 2-min Guided Journey  -  https://simplitconsulting.com/journey/ It maps your situation to the right service and gives you a roadmap."';
 
   var QR_DISCOVER = [
     'Let us help you find your way',
@@ -249,6 +301,140 @@
     'How is AI changing Oracle?'
   ];
 
+  // Contextual chips by page/URL
+  function getContextChips() {
+    var url   = window.location.href.toLowerCase();
+    var path  = window.location.pathname.toLowerCase();
+    var query = window.location.search.toLowerCase();
+
+    // Services - group level
+    if (url.indexOf('group=pre') !== -1) return [
+      'What is a Roadmap and Strategy engagement?',
+      'How do you help with vendor selection?',
+      'What does RFP support look like?',
+      'How long does pre-project advisory take?'
+    ];
+    if (url.indexOf('group=delivery') !== -1) return [
+      'What does a typical implementation look like?',
+      'How do you handle EBS to Cloud migration?',
+      'What is programme governance?',
+      'Do you offer staff augmentation?'
+    ];
+    if (url.indexOf('group=post') !== -1) return [
+      'What is a health check and how long does it take?',
+      'Can you rescue a failing project?',
+      'What does post go-live optimisation cover?',
+      'What is included in managed support?'
+    ];
+    if (url.indexOf('group=specialist') !== -1) return [
+      'What Oracle extensions and dev do you offer?',
+      'How can you help with analytics and reporting?',
+      'What does GRC and compliance cover?',
+      'How does Ask an Expert work?'
+    ];
+    // Services - specific service
+    if (url.indexOf('svc=health') !== -1) return [
+      'What does a Fusion health check cover?',
+      'How long does a health check take?',
+      'What happens after the health check?',
+      'How much does a health check cost?'
+    ];
+    if (url.indexOf('svc=rescue') !== -1) return [
+      'How quickly can you mobilise for a rescue?',
+      'What does AMO cover?',
+      'Have you rescued Oracle Fusion projects before?',
+      'What are the signs a project needs rescuing?'
+    ];
+    if (url.indexOf('svc=upgrade') !== -1) return [
+      'What is involved in an EBS to Cloud migration?',
+      'How long does an upgrade typically take?',
+      'What are the risks of migrating to Fusion?',
+      'Do you handle data migration too?'
+    ];
+    if (url.indexOf('svc=impl') !== -1) return [
+      'What is your implementation methodology?',
+      'How many consultants would be on my project?',
+      'What modules do you specialise in?',
+      'What does a typical timeline look like?'
+    ];
+    if (url.indexOf('svc=training') !== -1) return [
+      'What Oracle training do you offer?',
+      'Do you offer end-user training post go-live?',
+      'Can training be delivered remotely?',
+      'What is covered in enablement programmes?'
+    ];
+    // Journey page
+    if (path.indexOf('/journey') !== -1) return [
+      'What happens after I complete the journey?',
+      'How long does the advisory session take?',
+      'What will I get out of this?',
+      'I am already on Oracle - what is the fast-track?'
+    ];
+    // Blog / Architecture / AI series
+    if (path.indexOf('/blog') !== -1 || path.indexOf('/series') !== -1 || path.indexOf('/architecture') !== -1 || path.indexOf('/ai-series') !== -1) return [
+      'Can you explain this article in plain English?',
+      'How does this apply to my Oracle project?',
+      'What services relate to this topic?',
+      'Where can I learn more about this?'
+    ];
+    // Contact page
+    if (path.indexOf('/contact') !== -1) return [
+      'What is the best way to reach your team?',
+      'How quickly do you respond to enquiries?',
+      'Can I book a call directly?',
+      'Where are you based?'
+    ];
+    // Values page
+    if (path.indexOf('/values') !== -1) return [
+      'What makes Simpl\'IT different from big consultancies?',
+      'How do you work with clients?',
+      'Do you work globally?',
+      'Can you share client references?'
+    ];
+    // Home / default
+    return QR_COMMON;
+  }
+
+  function updateContextChips() {
+    // No-op for now - chips shown at welcome or page-change message
+  }
+
+  // -- Session persistence --------------------------------------
+  var SESSION_KEY = 'aria_session';
+  function saveSession() {
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+        history:       history,
+        messageCount:  messageCount,
+        leadCaptured:  leadCaptured,
+        emailSent:     emailSent,
+        nudgeShown:    nudgeShown,
+        journeyNudged: journeyNudged,
+        visitorName:   visitorName,
+        visitorEmail:  visitorEmail,
+        visitorCompany:visitorCompany,
+        lastPage:      window.location.href
+      }));
+    } catch(e) {}
+  }
+  function restoreSession() {
+    try {
+      var raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return false;
+      var s = JSON.parse(raw);
+      history        = s.history        || [];
+      messageCount   = s.messageCount   || 0;
+      leadCaptured   = s.leadCaptured   || false;
+      emailSent      = s.emailSent      || false;
+      nudgeShown     = s.nudgeShown     || false;
+      journeyNudged  = s.journeyNudged  || false;
+      visitorName    = s.visitorName    || '';
+      visitorEmail   = s.visitorEmail   || '';
+      visitorCompany = s.visitorCompany || '';
+      return { restored: true, lastPage: s.lastPage || '' };
+    } catch(e) { return false; }
+  }
+
   // -- TOGGLE --------------------------------------------------
   function toggle() {
     isOpen = !isOpen;
@@ -256,7 +442,22 @@
     document.getElementById('ariaBubble').classList.toggle('open', isOpen);
     document.getElementById('ariaNotifDot').classList.add('aria-hidden');
     if (isOpen) {
-      if (messageCount === 0) showWelcome();
+      if (messageCount === 0) {
+        var restored = restoreSession();
+        if (restored && history.length > 0) {
+          replayHistory();
+          if (restored.lastPage && restored.lastPage !== window.location.href) {
+            var pg = document.title.replace(/ [-|] Simpl.*$/i, '').trim();
+            setTimeout(function() {
+              addBot('I see you have moved to **' + pg + '**. Happy to continue - or ask me anything about this page.', getContextChips());
+            }, 400);
+          } else {
+            updateContextChips();
+          }
+        } else {
+          showWelcome();
+        }
+      }
       setTimeout(function() {
         scrollDown();
         document.getElementById('ariaInput').focus();
@@ -264,15 +465,35 @@
     }
   }
 
+  function replayHistory() {
+    var msgs = document.getElementById('ariaMessages');
+    if (!msgs) return;
+    msgs.innerHTML = '';
+    for (var i = 0; i < history.length; i++) {
+      var entry = history[i];
+      if (entry.role === 'user') {
+        var parts = entry.parts || [];
+        var txt = parts[0] ? parts[0].text || '' : '';
+        if (txt) addUser(txt, true);
+      } else if (entry.role === 'model') {
+        var parts = entry.parts || [];
+        var txt = parts[0] ? parts[0].text || '' : '';
+        if (txt) addBot(txt, null, null, true);
+      }
+    }
+    scrollDown();
+  }
+
   function showWelcome() {
     var hr = new Date().getHours();
     var greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
     var returning = localStorage.getItem('aria_visited');
+    var chips = getContextChips();
     var msg = returning
-      ? greet + '! Welcome back. Last time we spoke you were exploring Oracle with Simpl\'IT. Ready to continue?\n\nOr start fresh - https://simplitconsulting.com/journey'
+      ? greet + '! Welcome back. Ready to continue exploring Oracle with Simpl\'IT?\n\nOr start fresh - https://simplitconsulting.com/journey'
       : greet + '! I\'m **Aria** - Simpl\'IT\'s Oracle specialist.\n\nWe\'re here to help you find your way through Oracle - whether you\'re exploring, mid-project, or looking to get more from an existing implementation.\n\nNot sure where to start? https://simplitconsulting.com/journey';
     localStorage.setItem('aria_visited', '1');
-    addBot(msg, QR_DISCOVER, QR_COMMON);
+    addBot(msg, QR_DISCOVER, chips);
   }
 
   // -- SEND ----------------------------------------------------
@@ -285,7 +506,7 @@
     addUser(text);
     messageCount++;
     setTyping(true);
-    history.push({ role: 'user', parts: [{ text: text }] });
+    if (!silent) history.push({ role: 'user', parts: [{ text: text }] });
 
 
     if (attachedFile) {
@@ -335,7 +556,7 @@
       fetch(PROXY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: contents, model: MODELS[idx] })
+        body: JSON.stringify({ contents: contents, model: MODELS[idx], pageUrl: window.location.href })
       })
       .then(function(res) { return res.json(); })
       .then(function(data) {
@@ -352,11 +573,18 @@
           nudgeShown = true;
           setTimeout(showNudge, 800);
         }
-        if (messageCount === 5 && !leadCaptured) {
-          setTimeout(function() {
-            addBot('Based on our conversation, the **Guided Journey** might help you map the right path forward. It takes 2 minutes: https://simplitconsulting.com/journey');
-          }, 1200);
+        // Smart journey trigger - detect intent from visitor message
+        if (!journeyNudged && !leadCaptured && messageCount >= 2) {
+          var lm = msg.toLowerCase();
+          var jt = ['stuck','not sure','which service','where to start','cost','how much','timeline','how long','problem','issue','migration','upgrade','rescue','failing','behind schedule','over budget','what do you recommend','what should'];
+          if (jt.some(function(kw) { return lm.indexOf(kw) !== -1; })) {
+            journeyNudged = true;
+            setTimeout(function() {
+              addBot('Based on what you have shared, our 2-min Guided Journey would map the right path for you: https://simplitconsulting.com/journey/');
+            }, 1200);
+          }
         }
+        saveSession();
         setTyping(false);
         resetInactivity();
       })
@@ -369,7 +597,7 @@
   }
 
   // -- RENDER --------------------------------------------------
-  function addBot(text, qr, qr2) {
+  function addBot(text, qr, qr2, silent) {
     var msgs = document.getElementById('ariaMessages');
     var msg  = document.createElement('div');
     msg.className = 'aria-msg aria-bot';
@@ -431,7 +659,7 @@
     scrollDown();
   }
 
-  function addUser(text) {
+  function addUser(text, silent) {
     var msgs = document.getElementById('ariaMessages');
     var msg  = document.createElement('div');
     msg.className = 'aria-msg aria-user';
@@ -636,7 +864,8 @@
 
   // -- CLEAR ---------------------------------------------------
   function clearChat() {
-    history = []; messageCount = 0; nudgeShown = false; leadCaptured = false;
+    history = []; messageCount = 0; nudgeShown = false; journeyNudged = false; leadCaptured = false;
+    try { sessionStorage.removeItem(SESSION_KEY); } catch(e) {}
     emailSent = false; emailSending = false; transcriptShown = false;
     visitorName = ''; visitorEmail = ''; visitorCompany = '';
     clearTimeout(inactivityTimer);
