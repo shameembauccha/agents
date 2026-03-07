@@ -107,6 +107,8 @@
     '.aria-lead-submit { flex: 1; background: #c8973a; color: white; border: none; border-radius: 6px; padding: 8px; font-family: DM Sans, sans-serif; font-size: 0.8rem; font-weight: 600; cursor: pointer; }',
     '.aria-lead-submit:hover { background: #e8b85a; }',
     '.aria-lead-skip { background: transparent; color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 8px 12px; font-family: DM Sans, sans-serif; font-size: 0.78rem; cursor: pointer; }',
+    '.aria-wa-btn { display: inline-flex; align-items: center; gap: 6px; background: #25d366; color: white; border: none; border-radius: 8px; padding: 8px 14px; font-family: DM Sans, sans-serif; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 8px; text-decoration: none; }',
+    '.aria-wa-btn:hover { background: #1fb855; }',
 
     '.aria-input-row { padding: 12px 14px; border-top: 1px solid #f0ede4; display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0; background: white; }',
     '.aria-input { flex: 1; border: 1.5px solid #d8d3c8; border-radius: 20px; padding: 9px 14px; font-family: DM Sans, sans-serif; font-size: 0.84rem; outline: none; resize: none; max-height: 100px; line-height: 1.4; color: #1a1a1a; background: #f8f6f1; transition: border-color 0.15s; }',
@@ -189,7 +191,12 @@
   var history         = [];
   var attachedFile    = null;
 
+  // Detect language
+  var userLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+  var isFrench = userLang.indexOf('fr') === 0;
+
   var SYSTEM_PROMPT = 'You are Aria, Simpl\'IT Consulting\'s Oracle specialist assistant.\n\n'
+    + (isFrench ? 'LANGUAGE: The visitor\'s browser is set to French. Respond in French unless they write to you in English first.\n\n' : '')
     + 'ABOUT SIMPL\'IT:\n'
     + '- Specialist Oracle consulting firm, Port Louis, Mauritius\n'
     + '- Global reach: Africa, Middle East, Europe, Asia-Pacific\n'
@@ -217,8 +224,17 @@
     + 'Simpl\'IT helps activate native Oracle AI. AI readiness requires clean data and solid implementation foundation.\n\n'
     + 'SITE PAGES: /services, /about, /references (filter by vertical/country/domain), /journey (primary conversion), /contact\n\n'
     + 'JOURNEY: After 2-3 exchanges guide visitors to https://simplitconsulting.com/journey - skip if visitor is technical or has urgent issue.\n\n'
-    + 'BEHAVIOUR: Warm, expert, plain language. No jargon unless visitor is technical. Honest, no oversell. '
-    + 'Short focused responses. Bullet points only when listing. Never invent project references.';
+    + 'BEHAVIOUR:\n'
+    + '- Responses must be SHORT: 2-4 sentences max unless listing. Never write walls of text.\n'
+    + '- Be direct and specific. Cut filler phrases like "Great question" or "Certainly".\n'
+    + '- Cite real facts from Simpl\'IT knowledge only. Never invent case studies or project references.\n'
+    + '- If unsure, say so honestly. Trust is built by accuracy not confidence.\n'
+    + '- Plain language unless visitor is clearly technical.\n'
+    + '- No oversell. Help the visitor understand their options.\n\n'
+    + 'PAGE NAVIGATION:\n'
+    + '- You receive the current page URL and a snippet of visible content with each message.\n'
+    + '- Use this to give contextual help: explain page sections, guide to relevant pages, answer page-specific questions.\n'
+    + '- Always use full URLs when linking: https://simplitconsulting.com/[page]';
 
   var QR_DISCOVER = [
     'Let us help you find your way',
@@ -249,10 +265,14 @@
   }
 
   function showWelcome() {
-    addBot(
-      'Hi, I\'m **Aria** - Simpl\'IT\'s Oracle specialist.\n\nWe\'re here to help you find your way through Oracle - whether you\'re exploring, mid-project, or looking to get more from an existing implementation.\n\nNot sure where to start? https://simplitconsulting.com/journey',
-      QR_DISCOVER, QR_COMMON
-    );
+    var hr = new Date().getHours();
+    var greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+    var returning = localStorage.getItem('aria_visited');
+    var msg = returning
+      ? greet + '! Welcome back. Last time we spoke you were exploring Oracle with Simpl\'IT. Ready to continue?\n\nOr start fresh - https://simplitconsulting.com/journey'
+      : greet + '! I\'m **Aria** - Simpl\'IT\'s Oracle specialist.\n\nWe\'re here to help you find your way through Oracle - whether you\'re exploring, mid-project, or looking to get more from an existing implementation.\n\nNot sure where to start? https://simplitconsulting.com/journey';
+    localStorage.setItem('aria_visited', '1');
+    addBot(msg, QR_DISCOVER, QR_COMMON);
   }
 
   // -- SEND ----------------------------------------------------
@@ -278,14 +298,37 @@
       if (prev) prev.style.display = 'none';
     }
 
+    // Level 1: current page context
+    var pageCtx = 'CURRENT PAGE: ' + document.title + ' | URL: ' + window.location.href;
+
+    // Level 2: scrape visible main content (capped at 2000 chars)
+    var pageContent = '';
+    var mainEl = document.querySelector('main') || document.querySelector('article') || document.querySelector('.entry-content') || document.querySelector('#content') || document.body;
+    if (mainEl) {
+      var raw = mainEl.innerText || '';
+      // Strip excessive whitespace
+      raw = raw.replace(/\s+/g, ' ').trim();
+      // Remove widget text itself to avoid confusion
+      var widgetEl = document.getElementById('aria-widget');
+      if (widgetEl) {
+        var widgetText = widgetEl.innerText || '';
+        raw = raw.replace(widgetText, '').trim();
+      }
+      pageContent = raw.substring(0, 800);
+    }
+
+    var siteCtx = pageCtx;
+    if (pageContent) siteCtx += '\n\nVISIBLE PAGE CONTENT (use to answer page-specific questions):\n' + pageContent;
+    if (visitorName) siteCtx += '\n\nVISITOR NAME: ' + visitorName + ' - use their first name naturally in responses.';
+
     var contents = [
-      { role: 'user',  parts: [{ text: 'You are Aria. Instructions:\n\n' + SYSTEM_PROMPT }] },
+      { role: 'user',  parts: [{ text: 'You are Aria. Instructions:\n\n' + SYSTEM_PROMPT + '\n\n' + siteCtx }] },
       { role: 'model', parts: [{ text: 'Understood. I am Aria, ready to help.' }] }
     ].concat(history);
 
     function tryModel(idx, contents) {
       if (idx >= MODELS.length) {
-        addBot('I\'m having a moment - please try again or reach out at contact@simplitconsulting.com.');
+        addBot('Our AI is taking a breather right now. Reach us directly at contact@simplitconsulting.com or call +230 57984505  -  we respond within the hour.');
         setTyping(false);
         return;
       }
@@ -482,6 +525,22 @@
     var g = name ? ', ' + name.split(' ')[0] : '';
     addBot('Thank you' + g + '! Our team will be in touch within 24 hours.');
     sendEmail(email, name, company);
+    // WhatsApp handoff
+    setTimeout(function() {
+      var msgs = document.getElementById('ariaMessages');
+      var waWrap = document.createElement('div');
+      waWrap.className = 'aria-msg aria-bot';
+      var waAv = document.createElement('div');
+      waAv.className = 'aria-msg-av aria-av-aria';
+      waAv.textContent = 'A';
+      var waBubble = document.createElement('div');
+      waBubble.className = 'aria-bubble-msg';
+      waBubble.innerHTML = 'Prefer to chat right now? <br><a class="aria-wa-btn" href="https://wa.me/23057984505" target="_blank" rel="noopener">&#128172; Continue on WhatsApp</a>';
+      waWrap.appendChild(waAv);
+      waWrap.appendChild(waBubble);
+      msgs.appendChild(waWrap);
+      scrollDown();
+    }, 1500);
   }
 
   function dismissNudge() {
@@ -738,6 +797,24 @@
       var dot = document.getElementById('ariaNotifDot');
       if (dot) dot.classList.remove('aria-hidden');
     }, 8000);
+
+    // Placeholder rotation
+    var placeholders = [
+      'Ask me anything about Oracle...',
+      'Ask about EBS to Cloud migration...',
+      'Ask about implementation costs...',
+      'What Oracle modules do you use?',
+      'Ask about post go-live support...',
+      'How can Simpl\'IT help you?'
+    ];
+    var phIdx = 0;
+    setInterval(function() {
+      var inp = document.getElementById('ariaInput');
+      if (inp && inp !== document.activeElement && !inp.value) {
+        phIdx = (phIdx + 1) % placeholders.length;
+        inp.placeholder = placeholders[phIdx];
+      }
+    }, 3000);
 
   }, 0);
 
