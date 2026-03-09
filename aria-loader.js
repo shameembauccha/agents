@@ -10,8 +10,6 @@
   // -- CONFIG --------------------------------------------------
   var PROXY_URL      = 'https://simplitconsulting.com/wp-json/simplit/v1/aria';
   var ANALYTICS_URL  = 'https://simplitconsulting.com/wp-json/simplit/v1/aria-event';
-  var GA4_ID         = 'G-PC9QPVY5WY';
-  var GA4_SECRET     = '5uiy9J47RfOAf3DvO0_Sww';
   var SESSION_ANALYTICS_ID = 'aria_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
 
   function ariaTrack(event, data) {
@@ -23,20 +21,7 @@
     }
     fetch(ANALYTICS_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(function(){});
 
-    // 2. Fire GA4 Measurement Protocol event
-    if (GA4_ID && GA4_ID.indexOf('REPLACE') === -1 && GA4_SECRET && GA4_SECRET.indexOf('REPLACE') === -1) {
-      var ga4Payload = {
-        client_id:  SESSION_ANALYTICS_ID,
-        events: [{
-          name:   'aria_' + event,
-          params: { page_location: window.location.href, page_title: document.title, engagement_time_msec: 100 }
-        }]
-      };
-      if (data && data.message) ga4Payload.events[0].params.message_snippet = data.message.substring(0, 100);
-      fetch('https://www.google-analytics.com/mp/collect?measurement_id=' + GA4_ID + '&api_secret=' + GA4_SECRET, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ga4Payload)
-      }).catch(function(){});
-    }
+    // GA4 fired server-side via proxy
   }
 
   var MODELS = [
