@@ -14,7 +14,13 @@
 
   function ariaTrack(event, data) {
     // 1. Log to WordPress DB
-    var payload = { event: event, sessionId: SESSION_ANALYTICS_ID, pageUrl: window.location.href, pageTitle: document.title };
+    var payload = {
+      event:     event,
+      sessionId: SESSION_ANALYTICS_ID,
+      pageUrl:   window.location.href,
+      pageTitle: document.title,
+      ga4ClientId: SESSION_ANALYTICS_ID
+    };
     if (data) {
       if (data.message) { payload.message = data.message.substring(0, 500); payload.role = data.role || ''; }
       if (data.metadata) payload.metadata = data.metadata;
