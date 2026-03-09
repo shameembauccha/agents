@@ -528,10 +528,6 @@
     addUser(text);
     messageCount++;
     setTyping(true);
-    if (!silent) {
-      history.push({ role: 'user', parts: [{ text: text }] });
-      ariaTrack('message_sent', { message: text, role: 'user' });
-    }
 
 
     if (attachedFile) {
@@ -707,6 +703,10 @@
     msg.appendChild(bubble);
     msgs.appendChild(msg);
     scrollDown();
+    if (!silent) {
+      history.push({ role: 'user', parts: [{ text: text }] });
+      ariaTrack('message_sent', { message: text, role: 'user' });
+    }
   }
 
   function setTyping(val) {
