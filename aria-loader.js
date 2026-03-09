@@ -9,6 +9,36 @@
 
   // -- CONFIG --------------------------------------------------
   var PROXY_URL      = 'https://simplitconsulting.com/wp-json/simplit/v1/aria';
+  var ANALYTICS_URL  = 'https://simplitconsulting.com/wp-json/simplit/v1/aria-event';
+  var GA4_ID         = 'G-PC9QPVY5WY';
+  var GA4_SECRET     = '5uiy9J47RfOAf3DvO0_Sww';
+  var SESSION_ANALYTICS_ID = 'aria_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
+
+  function ariaTrack(event, data) {
+    // 1. Log to WordPress DB
+    var payload = { event: event, sessionId: SESSION_ANALYTICS_ID, pageUrl: window.location.href, pageTitle: document.title };
+    if (data) {
+      if (data.message) { payload.message = data.message.substring(0, 500); payload.role = data.role || ''; }
+      if (data.metadata) payload.metadata = data.metadata;
+    }
+    fetch(ANALYTICS_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(function(){});
+
+    // 2. Fire GA4 Measurement Protocol event
+    if (GA4_ID && GA4_ID.indexOf('REPLACE') === -1 && GA4_SECRET && GA4_SECRET.indexOf('REPLACE') === -1) {
+      var ga4Payload = {
+        client_id:  SESSION_ANALYTICS_ID,
+        events: [{
+          name:   'aria_' + event,
+          params: { page_location: window.location.href, page_title: document.title, engagement_time_msec: 100 }
+        }]
+      };
+      if (data && data.message) ga4Payload.events[0].params.message_snippet = data.message.substring(0, 100);
+      fetch('https://www.google-analytics.com/mp/collect?measurement_id=' + GA4_ID + '&api_secret=' + GA4_SECRET, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ga4Payload)
+      }).catch(function(){});
+    }
+  }
+
   var MODELS = [
     'gemini-2.5-flash',
     'gemini-2.0-flash',
@@ -442,6 +472,7 @@
     document.getElementById('ariaBubble').classList.toggle('open', isOpen);
     document.getElementById('ariaNotifDot').classList.add('aria-hidden');
     if (isOpen) {
+      ariaTrack('widget_open');
       if (messageCount === 0) {
         var restored = restoreSession();
         if (restored && history.length > 0) {
@@ -506,7 +537,10 @@
     addUser(text);
     messageCount++;
     setTyping(true);
-    if (!silent) history.push({ role: 'user', parts: [{ text: text }] });
+    if (!silent) {
+      history.push({ role: 'user', parts: [{ text: text }] });
+      ariaTrack('message_sent', { message: text, role: 'user' });
+    }
 
 
     if (attachedFile) {
@@ -569,6 +603,7 @@
           || 'I\'m having a moment - please try again or reach out at contact@simplitconsulting.com.';
         addBot(reply);
         history.push({ role: 'model', parts: [{ text: reply }] });
+        ariaTrack('message_received', { message: reply.substring(0, 200), role: 'aria' });
         if (messageCount >= 3 && !nudgeShown && !leadCaptured) {
           nudgeShown = true;
           setTimeout(showNudge, 800);
@@ -580,7 +615,8 @@
           if (jt.some(function(kw) { return lm.indexOf(kw) !== -1; })) {
             journeyNudged = true;
             setTimeout(function() {
-              addBot('Based on what you have shared, our 2-min Guided Journey would map the right path for you: https://simplitconsulting.com/journey/');
+              ariaTrack('journey_nudge');
+            addBot('Based on what you have shared, our 2-min Guided Journey would map the right path for you: https://simplitconsulting.com/journey/');
             }, 1200);
           }
         }
@@ -590,6 +626,7 @@
       })
       .catch(function() {
         modelIndex = idx + 1;
+        ariaTrack('model_fallback', { metadata: { from: MODELS[idx], to: MODELS[idx+1] || 'none' } });
         tryModel(modelIndex, contents);
       });
     }
@@ -642,7 +679,13 @@
             var btn = document.createElement('button');
             btn.className = 'aria-qr';
             btn.textContent = q;
-            btn.onclick = function() { qrBlock.remove(); send(q); };
+            btn.onclick = (function(qText) {
+              return function() {
+                ariaTrack('chip_clicked', { message: qText, role: 'user' });
+                qrBlock.remove();
+                send(qText);
+              };
+            })(q);
             wrap.appendChild(btn);
           })(items[i]);
         }
@@ -753,6 +796,7 @@
     var g = name ? ', ' + name.split(' ')[0] : '';
     addBot('Thank you' + g + '! Our team will be in touch within 24 hours.');
     sendEmail(email, name, company);
+    ariaTrack('lead_captured', { metadata: { name: name, company: company } });
     // WhatsApp handoff
     setTimeout(function() {
       var msgs = document.getElementById('ariaMessages');
@@ -763,7 +807,11 @@
       waAv.textContent = 'A';
       var waBubble = document.createElement('div');
       waBubble.className = 'aria-bubble-msg';
-      waBubble.innerHTML = 'Prefer to chat right now? <br><a class="aria-wa-btn" href="https://wa.me/23057984505" target="_blank" rel="noopener">&#128172; Continue on WhatsApp</a>';
+      waBubble.innerHTML = 'Prefer to chat right now? <br><a class="aria-wa-btn" id="ariaWaBtn" href="https://wa.me/23057984505" target="_blank" rel="noopener">&#128172; Continue on WhatsApp</a>';
+      setTimeout(function() {
+        var waBtn = document.getElementById('ariaWaBtn');
+        if (waBtn) waBtn.addEventListener('click', function() { ariaTrack('whatsapp_clicked'); });
+      }, 100);
       waWrap.appendChild(waAv);
       waWrap.appendChild(waBubble);
       msgs.appendChild(waWrap);
